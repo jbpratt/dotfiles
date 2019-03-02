@@ -7,6 +7,7 @@ filetype plugin indent on
 set path+=**
 set tabstop=2 shiftwidth=2 softtabstop=2
 set autowrite
+set number
 let mapleader = ","
 " run :GoBuild or :GoTestCompile based on the go file
 function! s:build_go_files()
@@ -29,6 +30,8 @@ let g:go_highlight_extra_types = 1
 
 let NERDTreeIgnore=['\~$', '.o$', 'bower_components', 'node_modules', '__pycache__']
 let NERDTreeWinSize=20
+let g:NERDTreeDirArrowExpandable = '>'
+let g:NERDTreeDirArrowCollapsible = 'v'
 
 let g:netrw_banner=0        " disable banner
 let g:netrw_browse_split=4  " open in prior window
@@ -39,3 +42,5 @@ nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>
 
 nnoremap ,v :source $MYVIMRC<CR>
 nnoremap ,e :edit $MYVIMRC<CR>
+
+map <C-n> :NERDTreeToggle<CR>
