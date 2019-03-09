@@ -30,8 +30,6 @@ let g:go_highlight_extra_types = 1
 
 let NERDTreeIgnore=['\~$', '.o$', 'bower_components', 'node_modules', '__pycache__']
 let NERDTreeWinSize=20
-let g:NERDTreeDirArrowExpandable = '>'
-let g:NERDTreeDirArrowCollapsible = 'v'
 
 let g:netrw_banner=0        " disable banner
 let g:netrw_browse_split=4  " open in prior window
