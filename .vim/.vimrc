@@ -3,7 +3,10 @@ try
 catch
 endtry
 
+colorscheme majora
+
 set path+=**
+set wildmenu
 set autowrite
 set number
 set autoindent
@@ -77,8 +80,6 @@ noremap <Leader>v :<C-u>vsplit<CR>
 "" Git
 noremap <Leader>ga :Gwrite<CR>
 noremap <Leader>gc :Gcommit<CR>
->>>>>>> 0f24053e1febb0d47a861d38765b9c795f9f8fa1
-
 
 nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>
 
