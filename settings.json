@@ -30,5 +30,6 @@
         "statusBar.background": "#B48EAD",
         "statusBar.noFolderBackground": "#B48EAD",
         "statusBar.debuggingBackground": "#B48EAD"
-    }
+    },
+    "go.useLanguageServer": true
 }
