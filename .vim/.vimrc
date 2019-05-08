@@ -11,6 +11,9 @@ Plug 'fatih/molokai'
 Plug 'rhysd/vim-clang-format'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
+Plug 'pangloss/vim-javascript'
+Plug 'mxw/vim-jsx'
+Plug 'easymotion/vim-easymotion'
 call plug#end()
 
 filetype plugin indent on
@@ -30,15 +33,26 @@ set expandtab
 set ignorecase
 set smartcase
 set smarttab
-set showmatch
 set mouse=a
 set showmode
-set cursorline
+set showmatch
 set showcmd
+set cursorline
 set ruler
+set hlsearch
 
 let mapleader = ","
 map <leader>w :w!<cr>
+inoremap jj <esc>
+"" Closing bracket completion
+inoremap " ""<left>
+inoremap ' ''<left>
+inoremap ( ()<left>
+inoremap [ []<left>
+inoremap { {}<left>
+inoremap {<CR> {<CR>}<ESC>O
+inoremap {;<CR> {<CR>};<ESC>O
+
 "" Switching windows
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
@@ -56,7 +70,7 @@ noremap <Leader>gc :Gcommit<CR>
 nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>
 
 nnoremap ,v :source $MYVIMRC<CR>
-nnoremap ,e :edit $MYVIMRC<CR>
+nnoremap ,V :edit $MYVIMRC<CR>
 
 " NERD TREE
 let NERDTreeIgnore=['\~$', '.o$', 'bower_components', 'node_modules', '__pycache__']
@@ -87,9 +101,10 @@ endfunction
 autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
 autocmd FileType go nmap <Leader>i <Plug>(go-info)
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-au filetype go inoremap <buffer> / .<C-x><C-o>
+au filetype go inoremap <buffer> kk .<C-x><C-o>
 
-
+let g:go_metalinter_command='golangci-lint'
+let g:go_def_mode='gopls'
 let g:go_info_mode = 'gocode'
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "goimports"
@@ -135,3 +150,24 @@ let g:airline_symbols.branch = '⎇'
 let g:airline_symbols.paste = 'ρ'
 let g:airline_symbols.paste = 'Þ'
 let g:airline_symbols.paste = '∥'
+
+" javascript and jsx plugin
+let g:javascript_plugin_jsdoc = 1
+let g:javascript_plugin_flow = 1
+
+let g:jsx_ext_required = 1
+
+" easymotion
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+
+" Jump to anywhere
+" `s{char}{char}{label}`
+" Need one more keystroke, but on average, it may be more comfortable.
+nmap s <Plug>(easymotion-overwin-f2)
+
+" Turn on case-insensitive feature
+let g:EasyMotion_smartcase = 1
+
+" JK motions: Line motions
+map <Leader>j <Plug>(easymotion-j)
+map <Leader>k <Plug>(easymotion-k)
