@@ -14,6 +14,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'pangloss/vim-javascript'
 Plug 'mxw/vim-jsx'
 Plug 'easymotion/vim-easymotion'
+Plug 'vim-syntastic/syntastic'
+Plug 'tbastos/vim-lua'
 call plug#end()
 
 filetype plugin indent on
@@ -105,7 +107,7 @@ au filetype go inoremap <buffer> kk .<C-x><C-o>
 
 let g:go_metalinter_command='golangci-lint'
 let g:go_def_mode='gopls'
-let g:go_info_mode = 'gocode'
+let g:go_info_mode = 'gopls'
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "goimports"
 let g:go_fmt_fail_silently = 1
@@ -126,7 +128,6 @@ let g:go_highlight_array_whitespace_error = 0
 let g:go_highlight_trailing_whitespace_error = 0
 let g:go_highlight_extra_types = 1
 let g:molokai_original = 1
-"colorscheme molokai
 "
 "
 autocmd FileType c ClangFormatAutoEnable
