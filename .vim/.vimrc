@@ -7,15 +7,14 @@ endif
 call plug#begin()
 Plug 'scrooloose/nerdtree'
 Plug 'fatih/vim-go'
-Plug 'fatih/molokai'
 Plug 'rhysd/vim-clang-format'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
-Plug 'pangloss/vim-javascript'
-Plug 'mxw/vim-jsx'
 Plug 'easymotion/vim-easymotion'
-Plug 'vim-syntastic/syntastic'
-Plug 'tbastos/vim-lua'
+Plug 'flrnprz/candid.vim'
+Plug 'dart-lang/dart-vim-plugin'
+Plug 'natebosch/vim-lsc'
+Plug 'natebosch/vim-lsc-dart'
 call plug#end()
 
 filetype plugin indent on
@@ -42,6 +41,7 @@ set showcmd
 set cursorline
 set ruler
 set hlsearch
+colorscheme candid
 
 let mapleader = ","
 map <leader>w :w!<cr>
@@ -63,7 +63,6 @@ noremap <C-h> <C-w>h
 
 "" Split
 noremap <Leader>h :<C-u>split<CR>
-noremap <Leader>v :<C-u>vsplit<CR>
 
 "" Git
 noremap <Leader>ga :Gwrite<CR>
@@ -71,7 +70,6 @@ noremap <Leader>gc :Gcommit<CR>
 
 nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>
 
-nnoremap ,v :source $MYVIMRC<CR>
 nnoremap ,V :edit $MYVIMRC<CR>
 
 " NERD TREE
@@ -79,7 +77,7 @@ let NERDTreeIgnore=['\~$', '.o$', 'bower_components', 'node_modules', '__pycache
 let NERDTreeWinSize=20
 let NERDTreeChDirMode=0
 let NERDTreeQuitOnOpen=1
-let NERDTreeShowHidden=1
+let NERDTreeShowHidden=0
 let NERDTreeKeepTreeInNewTab=1
 let g:netrw_banner=0        " disable banner
 let g:netrw_browse_split=4  " open in prior window
@@ -100,10 +98,55 @@ function! s:build_go_files()
   endif
 endfunction
 
-autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-autocmd FileType go nmap <Leader>i <Plug>(go-info)
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
+au FileType go nmap <leader>taj :GoAddTags json<cr>
+au FileType go nmap <leader>tab :GoAddTags bson<cr>:GoAddTags bson,omitempty<cr>
+au FileType go nmap <leader>tad :GoAddTags db<cr>
+au FileType go nmap <leader>trj :GoRemoveTags json<cr>
+au FileType go nmap <leader>trb :GoRemoveTags bson<cr>
+au FileType go nmap <leader>trd :GoRemoveTags db<cr>
+au FileType go nmap <leader>tr :GoRemoveTags<cr>
 au filetype go inoremap <buffer> kk .<C-x><C-o>
+
+augroup go
+  autocmd!
+
+  " Show by default 4 spaces for a tab
+  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
+
+  " :GoBuild and :GoTestCompile
+  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+
+  " :GoTest
+  autocmd FileType go nmap <leader>t  <Plug>(go-test)
+
+  " :GoRun
+  autocmd FileType go nmap <leader>r  <Plug>(go-run)
+
+  " :GoDoc
+  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
+
+  " :GoCoverageToggle
+  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
+
+  " :GoInfo
+  autocmd FileType go nmap <Leader>i <Plug>(go-info)
+
+  " :GoMetaLinter
+  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
+
+  " :GoDef but opens in a vertical split
+  autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
+  " :GoDef but opens in a horizontal split
+  autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
+
+  " :GoAlternate  commands :A, :AV, :AS and :AT
+  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+augroup END
+
 
 let g:go_metalinter_command='golangci-lint'
 let g:go_def_mode='gopls'
@@ -127,7 +170,6 @@ let g:go_highlight_space_tab_error = 0
 let g:go_highlight_array_whitespace_error = 0
 let g:go_highlight_trailing_whitespace_error = 0
 let g:go_highlight_extra_types = 1
-let g:molokai_original = 1
 "
 "
 autocmd FileType c ClangFormatAutoEnable
@@ -152,12 +194,6 @@ let g:airline_symbols.paste = 'ρ'
 let g:airline_symbols.paste = 'Þ'
 let g:airline_symbols.paste = '∥'
 
-" javascript and jsx plugin
-let g:javascript_plugin_jsdoc = 1
-let g:javascript_plugin_flow = 1
-
-let g:jsx_ext_required = 1
-
 " easymotion
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 
@@ -172,3 +208,9 @@ let g:EasyMotion_smartcase = 1
 " JK motions: Line motions
 map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
+
+" Dart config
+let dart_html_in_string=v:true
+let dart_format_on_save = 1
+let g:lsc_auto_map = v:true
+
