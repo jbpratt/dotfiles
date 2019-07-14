@@ -11,7 +11,7 @@ Plug 'rhysd/vim-clang-format'
 Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
 Plug 'easymotion/vim-easymotion'
-Plug 'flrnprz/candid.vim'
+Plug 'yous/vim-open-color'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'natebosch/vim-lsc'
 Plug 'natebosch/vim-lsc-dart'
@@ -41,7 +41,7 @@ set showcmd
 set cursorline
 set ruler
 set hlsearch
-colorscheme candid
+colorscheme open-color
 
 let mapleader = ","
 map <leader>w :w!<cr>
@@ -60,6 +60,12 @@ noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 noremap <C-h> <C-w>h
+
+"" Resizing windows
+nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+nnoremap <silent> <Leader>0 :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
+nnoremap <silent> <Leader>9 :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
 
 "" Split
 noremap <Leader>h :<C-u>split<CR>
