@@ -15,12 +15,17 @@ Plug 'yous/vim-open-color'
 Plug 'dart-lang/dart-vim-plugin'
 Plug 'natebosch/vim-lsc'
 Plug 'natebosch/vim-lsc-dart'
+Plug 'derekwyatt/vim-scala'
+Plug 'vim-syntastic/syntastic'
+Plug 'rust-lang/rust.vim'
+Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 call plug#end()
 
 filetype plugin indent on
 syntax on
 
 set path+=**
+set noswapfile
 set wildmenu
 set autowrite
 set number
@@ -106,6 +111,7 @@ endfunction
 
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 au FileType go nmap <leader>taj :GoAddTags json<cr>
+au FileType go nmap <leader>tat :GoAddTags toml<cr>
 au FileType go nmap <leader>tab :GoAddTags bson<cr>:GoAddTags bson,omitempty<cr>
 au FileType go nmap <leader>tad :GoAddTags db<cr>
 au FileType go nmap <leader>trj :GoRemoveTags json<cr>
@@ -155,8 +161,8 @@ augroup END
 
 
 let g:go_metalinter_command='golangci-lint'
-let g:go_def_mode='gopls'
-let g:go_info_mode = 'gopls'
+""let g:go_def_mode='gopls'
+""let g:go_info_mode = 'gopls'
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "goimports"
 let g:go_fmt_fail_silently = 1
@@ -220,3 +226,9 @@ let dart_html_in_string=v:true
 let dart_format_on_save = 1
 let g:lsc_auto_map = v:true
 
+
+" Rust config
+let g:rustfmt_autosave = 1
+
+" sh fmt
+let g:shfmt_fmt_on_save = 1

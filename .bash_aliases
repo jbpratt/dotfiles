@@ -1,6 +1,6 @@
-alias cp="cp -i"                          # confirm before overwriting something
-alias df='df -h'                          # human-readable sizes
-alias free='free -m'                      # show sizes in MB
+alias cp="cp -i"     # confirm before overwriting something
+alias df='df -h'     # human-readable sizes
+alias free='free -m' # show sizes in MB
 alias np='nano -w PKGBUILD'
 alias more=less
 alias ls="lsd"
@@ -12,3 +12,7 @@ alias ..="cd .."
 alias ...="cd ../.."
 alias grep='grep --color=auto'
 alias weather="curl wttr.in/Birmingham,AL"
+alias gc="git commit"
+alias ga="git add"
+alias gd="git diff --cached"
+alias gs="git status"
