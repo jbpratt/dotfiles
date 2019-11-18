@@ -6,10 +6,11 @@ endif
 
 call plug#begin()
 Plug 'scrooloose/nerdtree'
+Plug '~/.fzf'
 Plug 'fatih/vim-go'
 Plug 'rhysd/vim-clang-format'
-Plug 'vim-airline/vim-airline'
 Plug 'tpope/vim-fugitive'
+Plug 'itchyny/lightline.vim'
 Plug 'easymotion/vim-easymotion'
 Plug 'yous/vim-open-color'
 Plug 'dart-lang/dart-vim-plugin'
@@ -19,11 +20,14 @@ Plug 'derekwyatt/vim-scala'
 Plug 'vim-syntastic/syntastic'
 Plug 'rust-lang/rust.vim'
 Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
+Plug 'andys8/vim-elm-syntax', { 'for': ['elm'] }
+Plug 'neoclide/coc.nvim', {'branch': 'release'}
 call plug#end()
 
 filetype plugin indent on
 syntax on
 
+set laststatus=2
 set path+=**
 set noswapfile
 set wildmenu
@@ -49,8 +53,25 @@ set hlsearch
 colorscheme open-color
 
 let mapleader = ","
+function! CocCurrentFunction()
+    return get(b:, 'coc_current_function', '')
+endfunction
+
+let g:lightline = {
+      \ 'colorscheme': 'wombat',
+      \ 'active': {
+      \   'left': [ [ 'mode', 'paste' ],
+      \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
+      \ },
+      \ 'component_function': {
+      \   'cocstatus': 'coc#status',
+      \   'currentfunction': 'CocCurrentFunction'
+      \ },
+      \ }
+
 map <leader>w :w!<cr>
 inoremap jj <esc>
+
 "" Closing bracket completion
 inoremap " ""<left>
 inoremap ' ''<left>
@@ -83,6 +104,16 @@ nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>
 
 nnoremap ,V :edit $MYVIMRC<CR>
 
+" Open files in horizontal split
+nnoremap <silent> <Leader>s :call fzf#run({
+\   'down': '40%',
+\   'sink': 'botright split' })<CR>
+
+" Open files in vertical horizontal split
+nnoremap <silent> <Leader>v :call fzf#run({
+\   'right': winwidth('.') / 2,
+\   'sink':  'vertical botright split' })<CR>
+
 " NERD TREE
 let NERDTreeIgnore=['\~$', '.o$', 'bower_components', 'node_modules', '__pycache__']
 let NERDTreeWinSize=20
@@ -98,7 +129,6 @@ let g:netrw_liststyle=3     " tree view
 map <C-e> :NERDTreeToggle<CR>:NERDTreeMirror<CR>
 map <C-n> :NERDTreeToggle<CR>
 map <leader>ss :setlocal spell!<cr>
-
 
 function! s:build_go_files()
   let l:file = expand('%')
@@ -161,8 +191,8 @@ augroup END
 
 
 let g:go_metalinter_command='golangci-lint'
-""let g:go_def_mode='gopls'
-""let g:go_info_mode = 'gopls'
+let g:go_def_mode='gopls'
+let g:go_info_mode = 'gopls'
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "goimports"
 let g:go_fmt_fail_silently = 1
@@ -182,29 +212,9 @@ let g:go_highlight_space_tab_error = 0
 let g:go_highlight_array_whitespace_error = 0
 let g:go_highlight_trailing_whitespace_error = 0
 let g:go_highlight_extra_types = 1
-"
+
 "
 autocmd FileType c ClangFormatAutoEnable
-
-" air-line plugin specific commands
-let g:airline_powerline_fonts = 1
-
-if !exists('g:airline_symbols')
-    let g:airline_symbols = {}
-endif
-
-" unicode symbols
-let g:airline_left_sep = '»'
-let g:airline_left_sep = '▶'
-let g:airline_right_sep = '«'
-let g:airline_right_sep = '◀'
-let g:airline_symbols.linenr = '␊'
-let g:airline_symbols.linenr = '␤'
-let g:airline_symbols.linenr = '¶'
-let g:airline_symbols.branch = '⎇'
-let g:airline_symbols.paste = 'ρ'
-let g:airline_symbols.paste = 'Þ'
-let g:airline_symbols.paste = '∥'
 
 " easymotion
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
@@ -226,9 +236,22 @@ let dart_html_in_string=v:true
 let dart_format_on_save = 1
 let g:lsc_auto_map = v:true
 
-
 " Rust config
 let g:rustfmt_autosave = 1
 
 " sh fmt
 let g:shfmt_fmt_on_save = 1
+
+nmap <silent> <leader>u <Plug>(coc-references)
+nmap <silent> <leader>p :call CocActionAsync('format')<CR>
+
+" Elm stuff
+let g:elm_jump_to_error = 0
+let g:elm_make_output_file = "elm.js"
+let g:elm_make_show_warnings = 0
+let g:elm_syntastic_show_warnings = 0
+let g:elm_browser_command = ""
+let g:elm_detailed_complete = 0
+let g:elm_format_autosave = 1
+let g:elm_format_fail_silently = 0
+let g:elm_setup_keybindings = 1
