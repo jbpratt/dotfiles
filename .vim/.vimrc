@@ -8,6 +8,7 @@ call plug#begin()
 Plug 'scrooloose/nerdtree'
 Plug '~/.fzf'
 Plug 'fatih/vim-go'
+Plug 'cormacrelf/vim-colors-github'
 Plug 'rhysd/vim-clang-format'
 Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
@@ -50,8 +51,10 @@ set showcmd
 set cursorline
 set ruler
 set hlsearch
-colorscheme open-color
+colorscheme github
 
+" if you use airline / lightline
+let g:lightline = { 'colorscheme': 'github' }
 let mapleader = ","
 function! CocCurrentFunction()
     return get(b:, 'coc_current_function', '')
@@ -255,3 +258,22 @@ let g:elm_detailed_complete = 0
 let g:elm_format_autosave = 1
 let g:elm_format_fail_silently = 0
 let g:elm_setup_keybindings = 1
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Remap for format selected region
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+" Use `[g` and `]g` to navigate diagnostics
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+" Use <c-space> to trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
