@@ -10,6 +10,11 @@ if [ -f ~/.bash_aliases ]; then
 	source ~/.bash_aliases
 fi
 
+
+if [ -f ~/.bash_profile ]; then
+	source ~/.bash_profile
+fi
+
 export GO111MODULE=on
 export PS1="\W >\[$(tput sgr0)\]"
 export PATH="$PATH:$HOME/.rvm/bin"
@@ -27,6 +32,9 @@ shopt -s checkwinsize
 shopt -s expand_aliases
 
 shopt -s histappend
+
+source /usr/share/fzf/key-bindings.bash
+source /usr/share/fzf/completion.bash
 
 #
 # # ex - archive extractor
@@ -52,40 +60,5 @@ ex() {
 	fi
 }
 
-sharefiles() {
-	for file in $(ls "$@"); do
-		echo -n $(pwd)
-		[[ $(pwd) != "/" ]] && echo -n /
-		echo $file
-	done
-}
 
-colors() {
-	local fgc bgc vals seq0
-
-	printf "Color escapes are %s\n" '\e[${value};...;${value}m'
-	printf "Values 30..37 are \e[33mforeground colors\e[m\n"
-	printf "Values 40..47 are \e[43mbackground colors\e[m\n"
-	printf "Value  1 gives a  \e[1mbold-faced look\e[m\n\n"
-
-	# foreground colors
-	for fgc in {30..37}; do
-		# background colors
-		for bgc in {40..47}; do
-			fgc=${fgc#37} # white
-			bgc=${bgc#40} # black
-
-			vals="${fgc:+$fgc;}${bgc}"
-			vals=${vals%%;}
-
-			seq0="${vals:+\e[${vals}m}"
-			printf "  %-9s" "${seq0:-(default)}"
-			printf " ${seq0}TEXT\e[m"
-			printf " \e[${vals:+${vals+$vals;}}1mBOLD\e[m"
-		done
-		echo
-		echo
-	done
-}
-
-[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm"
+complete -C aws_completer aws

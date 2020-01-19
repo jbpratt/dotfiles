@@ -1,6 +1,6 @@
 {
     "workbench.startupEditor": "newUntitledFile",
-    "workbench.colorTheme": "Quiet Light",
+    "workbench.colorTheme": "Kya",
     "vim.leader": ",",
     "vim.normalModeKeyBindingsNonRecursive": [
         {
@@ -27,9 +27,12 @@
     "vim.statusBarColors.visualblock": "#A3BE8C",
     "vim.statusBarColors.replace": "#D08770",
     "workbench.colorCustomizations": {
-        "statusBar.background": "#B48EAD",
-        "statusBar.noFolderBackground": "#B48EAD",
-        "statusBar.debuggingBackground": "#B48EAD"
+        "statusBar.background": "#8FBCBB",
+        "statusBar.noFolderBackground": "#8FBCBB",
+        "statusBar.debuggingBackground": "#8FBCBB"
     },
-    "go.useLanguageServer": true
+    "go.useLanguageServer": true,
+    "vim.vimrc.enable": true,
+    "vim.vimrc.path": "/home/jbpratt/.vimrc",
+    "window.titleBarStyle": "custom"
 }
