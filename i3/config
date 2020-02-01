@@ -1,4 +1,4 @@
-
+exec ~/.screenlayout/default.sh
 # Set mod key (Mod1=<Alt>, Mod4=<Super>)
 set $mod Mod1
 
@@ -8,9 +8,6 @@ set $down  j
 set $up    k
 set $right l
 
-
-exec ~/.screenlayout/jbpratt.sh 
-
 # Configure border style <normal|1pixel|pixel xx|none|pixel>
 new_window pixel 0
 new_float normal
@@ -19,7 +16,6 @@ new_float normal
 hide_edge_borders none
 
 # change borders
-exec --no-startup-id xrandr --output eDP1 --mode 1680x1050
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -29,13 +25,13 @@ font xft:URWGothic-Book 11
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec terminal
+bindsym $mod+Return exec alacritty
 
 # kill focused window
 bindsym $mod+Shift+q kill
 
 # start program launcher
-bindsym $mod+d exec --no-startup-id dmenu_recency
+# bindsym $mod+d exec --no-startup-id dmenu_recency
 
 # launch categorized menu
 bindsym $mod+z exec --no-startup-id morc_menu
@@ -56,7 +52,6 @@ bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart du
 bindsym Print exec --no-startup-id i3-scrot
 bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
-# bindsym $mod+Shift+h exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
 bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 # change focus
@@ -124,7 +119,7 @@ bindsym $mod+Ctrl+Right workspace next
 bindsym $mod+Ctrl+Left workspace prev
 
 # htop
-bindsym $mod+i exec urxvt -e htop
+bindsym $mod+i exec alacritty -e htop
 
 # Workspace names
 # to display names or symbols instead of plain workspace numbers you can use
@@ -176,13 +171,10 @@ for_window [class="Clipgrab"] floating enable
 for_window [title="File Transfer*"] floating enable
 for_window [class="Galculator"] floating enable border pixel 1
 for_window [class="GParted"] floating enable border normal
-for_window [title="i3_help"] floating enable sticky enable border normal
 for_window [class="Lightdm-settings"] floating enable
 for_window [class="Lxappearance"] floating enable sticky enable border normal
-for_window [class="Manjaro Settings Manager"] floating enable border normal
 for_window [class="Nitrogen"] floating enable sticky enable border normal
 for_window [class="Oblogout"] fullscreen enable
-for_window [class="octopi"] floating enable
 for_window [class="Pamac-manager"] floating enable
 for_window [class="Pavucontrol"] floating enable
 for_window [class="qt5ct"] floating enable sticky enable border normal
@@ -353,3 +345,7 @@ mode "$mode_gaps_outer" {
         bindsym Return mode "default"
         bindsym Escape mode "default"
 }
+
+exec --no-startup-id "pulseaudio --start"
+bindsym $mod+d exec alacritty -t 'fzf' -e 'i3-dmenu-desktop --dmenu=fzf'
+for_window [title="fzf"] floating enable
