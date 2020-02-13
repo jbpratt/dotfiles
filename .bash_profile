@@ -2,16 +2,18 @@
 # ~/.bash_profile
 #
 
-[[ -f ~/.bashrc ]] && . ~/.bashrc
-# Add .NET Core SDK tools
-export PATH="$PATH:/home/jbpratt/.dotnet/tools"
-export PATH=$PATH:$GOROOT/bin
-export PATH="$PATH:$(go env GOROOT)/misc/wasm"
-export PATH=$GOPATH/bin:$PATH
-export PATH=~/bin:$PATH
-export DOTNET_CLI_TELEMETRY_OPTOUT=true
-export QT_QPA_PLATFORMTHEME="qt5ct"
 export EDITOR=/usr/bin/vim
 export BROWSER=/usr/bin/firefox
 export GOROOT=/usr/lib/go
 export GOPATH=/home/jbpratt/go
+export PATH=$PATH:$GOROOT/bin
+export PATH="$PATH:$(go env GOROOT)/misc/wasm"
+export PATH=$GOPATH/bin:$PATH
+export PATH=~/bin:$PATH
+export PATH=$HOME/.local/bin/:$PATH
+export PATH=$PATH:/home/jbpratt/Android/Sdk/platform-tools:/home/jbpratt/Android/Sdk/tools:/home/jbpratt/Android/Sdk/tools/bin
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
+
+# opam configuration
+test -r /home/jbpratt/.opam/opam-init/init.sh && . /home/jbpratt/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true

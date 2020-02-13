@@ -13,16 +13,13 @@ Plug 'rhysd/vim-clang-format'
 Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'easymotion/vim-easymotion'
-Plug 'yous/vim-open-color'
-Plug 'dart-lang/dart-vim-plugin'
-Plug 'natebosch/vim-lsc'
-Plug 'natebosch/vim-lsc-dart'
-Plug 'derekwyatt/vim-scala'
 Plug 'vim-syntastic/syntastic'
 Plug 'rust-lang/rust.vim'
+Plug 'elmcast/elm-vim'
 Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
-Plug 'andys8/vim-elm-syntax', { 'for': ['elm'] }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'prabirshrestha/async.vim'
+Plug 'prabirshrestha/vim-lsp'
 call plug#end()
 
 filetype plugin indent on
@@ -53,7 +50,6 @@ set ruler
 set hlsearch
 colorscheme github
 
-" if you use airline / lightline
 let g:lightline = { 'colorscheme': 'github' }
 let mapleader = ","
 function! CocCurrentFunction()
@@ -98,22 +94,26 @@ nnoremap <silent> <Leader>9 :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
 
 "" Split
 noremap <Leader>h :<C-u>split<CR>
+noremap <Leader>g :<C-u>vsplit<CR>
+
+noremap <Leader>tt :<C-u>term<CR>
+noremap <Leader>vt :<C-u>vert term<CR>
 
 "" Git
 noremap <Leader>ga :Gwrite<CR>
 noremap <Leader>gc :Gcommit<CR>
 
-nnoremap ,html :-1read $HOME/.vim/.skeleton.html<CR>
+nnoremap <Leader>html :-1read $HOME/.vim/.skeleton.html<CR>
 
-nnoremap ,V :edit $MYVIMRC<CR>
+nnoremap <Leader>V :edit $MYVIMRC<CR>
 
 " Open files in horizontal split
-nnoremap <silent> <Leader>s :call fzf#run({
+nnoremap <silent> <Leader>z :call fzf#run({
 \   'down': '40%',
 \   'sink': 'botright split' })<CR>
 
 " Open files in vertical horizontal split
-nnoremap <silent> <Leader>v :call fzf#run({
+nnoremap <silent> <Leader>Z :call fzf#run({
 \   'right': winwidth('.') / 2,
 \   'sink':  'vertical botright split' })<CR>
 
@@ -124,10 +124,6 @@ let NERDTreeChDirMode=0
 let NERDTreeQuitOnOpen=1
 let NERDTreeShowHidden=0
 let NERDTreeKeepTreeInNewTab=1
-let g:netrw_banner=0        " disable banner
-let g:netrw_browse_split=4  " open in prior window
-let g:netrw_altv=1          " open splits to the right
-let g:netrw_liststyle=3     " tree view
 
 map <C-e> :NERDTreeToggle<CR>:NERDTreeMirror<CR>
 map <C-n> :NERDTreeToggle<CR>
@@ -155,51 +151,29 @@ au filetype go inoremap <buffer> kk .<C-x><C-o>
 
 augroup go
   autocmd!
-
-  " Show by default 4 spaces for a tab
   autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
-
-  " :GoBuild and :GoTestCompile
   autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-
-  " :GoTest
   autocmd FileType go nmap <leader>t  <Plug>(go-test)
-
-  " :GoRun
   autocmd FileType go nmap <leader>r  <Plug>(go-run)
-
-  " :GoDoc
-  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
-
-  " :GoCoverageToggle
-  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
-
-  " :GoInfo
   autocmd FileType go nmap <Leader>i <Plug>(go-info)
-
-  " :GoMetaLinter
   autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
-
-  " :GoDef but opens in a vertical split
   autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
-  " :GoDef but opens in a horizontal split
   autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
-
-  " :GoAlternate  commands :A, :AV, :AS and :AT
   autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
   autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
   autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
   autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
 augroup END
 
-
-let g:go_metalinter_command='golangci-lint'
+" let g:go_metalinter_command='golangci-lint'
+" let g:go_metalinter_autosave = 1
+let g:go_metalinter_enabled = ['deadcode', 'errcheck', 'gosimple', 'govet', 'staticcheck', 'typecheck', 'unused', 'varcheck']
 let g:go_def_mode='gopls'
 let g:go_info_mode = 'gopls'
 let g:go_list_type = "quickfix"
-let g:go_fmt_command = "goimports"
+let g:go_fmt_command = "gofumports"
 let g:go_fmt_fail_silently = 1
-let g:syntastic_go_checkers = ['golint', 'govet']
+let g:syntastic_go_checkers = ['golangci-lint', 'govet']
 let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 let g:go_auto_type_info = 1 
 let g:go_highlight_types = 1
@@ -234,11 +208,6 @@ let g:EasyMotion_smartcase = 1
 map <Leader>j <Plug>(easymotion-j)
 map <Leader>k <Plug>(easymotion-k)
 
-" Dart config
-let dart_html_in_string=v:true
-let dart_format_on_save = 1
-let g:lsc_auto_map = v:true
-
 " Rust config
 let g:rustfmt_autosave = 1
 
@@ -247,17 +216,6 @@ let g:shfmt_fmt_on_save = 1
 
 nmap <silent> <leader>u <Plug>(coc-references)
 nmap <silent> <leader>p :call CocActionAsync('format')<CR>
-
-" Elm stuff
-let g:elm_jump_to_error = 0
-let g:elm_make_output_file = "elm.js"
-let g:elm_make_show_warnings = 0
-let g:elm_syntastic_show_warnings = 0
-let g:elm_browser_command = ""
-let g:elm_detailed_complete = 0
-let g:elm_format_autosave = 1
-let g:elm_format_fail_silently = 0
-let g:elm_setup_keybindings = 1
 
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
@@ -277,3 +235,21 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
+
+let g:syntastic_python_checkers=['mypy']
+
+if executable(expand('~/lsp/kotlin-language-server/server/bin/kotlin-language-server'))
+    au User lsp_setup call lsp#register_server({
+        \ 'name': 'kotlin-language-server',
+        \ 'cmd': {server_info->[
+        \     &shell,
+        \     &shellcmdflag,
+        \     expand('~/lsp/kotlin-language-server/server/bin/kotlin-language-server')
+        \ ]},
+        \ 'whitelist': ['kotlin']
+        \ })
+endif
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:elm_syntastic_show_warnings = 1
