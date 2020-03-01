@@ -280,3 +280,4 @@ let g:cabal_indent_section = 2
 noremap <Leader>gt :<C-u>ter ++close stack repl<CR>
 
 au Filetype kt nmap <leader>b :!kotlinc %t<CR>
+set ttymouse=sgr
