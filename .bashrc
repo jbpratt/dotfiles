@@ -137,3 +137,4 @@ function my_set_prompt() {
 
 gitstatus_stop && gitstatus_start
 PROMPT_COMMAND=my_set_prompt
+export MANPAGER="sh -c 'col -bx | bat -l man -p'"

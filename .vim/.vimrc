@@ -20,6 +20,8 @@ Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
 Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
+Plug 'udalov/kotlin-vim'
+Plug 'neovimhaskell/haskell-vim'
 call plug#end()
 
 filetype plugin indent on
@@ -57,7 +59,7 @@ function! CocCurrentFunction()
 endfunction
 
 let g:lightline = {
-      \ 'colorscheme': 'wombat',
+      \ 'colorscheme': 'github',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
@@ -135,6 +137,13 @@ function! s:build_go_files()
     call go#test#Test(0, 1)
   elseif l:file =~# '^\f\+\.go$'
     call go#cmd#Build(0)
+  endif
+endfunction
+
+function! s:build_kotlin_files()
+  let l:file = expand('%')
+  if l:file =~# '^\f\+\.kt$'
+    return ""
   endif
 endfunction
 
@@ -253,3 +262,21 @@ endif
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:elm_syntastic_show_warnings = 1
+
+let g:haskell_classic_highlighting = 1
+let g:haskell_indent_if = 3
+let g:haskell_indent_case = 2
+let g:haskell_indent_let = 4
+let g:haskell_indent_where = 6
+let g:haskell_indent_before_where = 2
+let g:haskell_indent_after_bare_where = 2
+let g:haskell_indent_do = 3
+let g:haskell_indent_in = 1
+let g:haskell_indent_guard = 2
+let g:haskell_indent_case_alternative = 1
+let g:cabal_indent_section = 2
+
+" Open stack repl
+noremap <Leader>gt :<C-u>ter ++close stack repl<CR>
+
+au Filetype kt nmap <leader>b :!kotlinc %t<CR>
