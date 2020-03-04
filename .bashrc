@@ -138,3 +138,8 @@ function my_set_prompt() {
 gitstatus_stop && gitstatus_start
 PROMPT_COMMAND=my_set_prompt
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
+function kotlinr() {
+  echo Compiling, please wait...
+  kotlinc $1 -include-runtime -d out.jar
+  java -jar out.jar
+}

@@ -277,7 +277,8 @@ let g:haskell_indent_case_alternative = 1
 let g:cabal_indent_section = 2
 
 " Open stack repl
-noremap <Leader>gt :<C-u>ter ++close stack repl<CR>
+au Filetype hs nmap <Leader>gt :<C-u>ter ++close stack repl<CR>
 
-au Filetype kt nmap <leader>b :!kotlinc %t<CR>
+au Filetype kt nmap <leader>b :<C-u>ter ++close kotlinc %t<CR>
+au Filetype kt nmap <Leader>t :<C-u>ter ++close kotlinc-jvm<CR>
 set ttymouse=sgr
