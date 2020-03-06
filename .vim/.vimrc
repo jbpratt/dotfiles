@@ -73,15 +73,6 @@ let g:lightline = {
 map <leader>w :w!<cr>
 inoremap jj <esc>
 
-"" Closing bracket completion
-inoremap " ""<left>
-inoremap ' ''<left>
-inoremap ( ()<left>
-inoremap [ []<left>
-inoremap { {}<left>
-inoremap {<CR> {<CR>}<ESC>O
-inoremap {;<CR> {<CR>};<ESC>O
-
 "" Switching windows
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
