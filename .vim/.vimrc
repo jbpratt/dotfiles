@@ -22,6 +22,8 @@ Plug 'prabirshrestha/async.vim'
 Plug 'prabirshrestha/vim-lsp'
 Plug 'udalov/kotlin-vim'
 Plug 'neovimhaskell/haskell-vim'
+Plug 'monkoose/fzf-hoogle.vim'
+Plug 'zah/nim.vim'
 call plug#end()
 
 filetype plugin indent on
@@ -268,8 +270,24 @@ let g:haskell_indent_case_alternative = 1
 let g:cabal_indent_section = 2
 
 " Open stack repl
-au Filetype hs nmap <Leader>gt :<C-u>ter ++close stack repl<CR>
+au Filetype hs nmap <Leader>th :<C-u>ter ++close stack repl<CR>
 
 au Filetype kt nmap <leader>b :<C-u>ter ++close kotlinc %t<CR>
 au Filetype kt nmap <Leader>t :<C-u>ter ++close kotlinc-jvm<CR>
 set ttymouse=sgr
+fun! JumpToDef()
+  if exists("*GotoDefinition_" . &filetype)
+    call GotoDefinition_{&filetype}()
+  else
+    exe "norm! \<C-]>"
+  endif
+endf
+
+" Jump to tag
+nn <M-g> :call JumpToDef()<cr>
+ino <M-g> <esc>:call JumpToDef()<cr>i
+
+augroup HoogleMaps
+  autocmd!
+  autocmd FileType haskell setlocal keywordprg=:Hoogle
+augroup END
