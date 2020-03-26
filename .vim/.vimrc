@@ -9,26 +9,18 @@ Plug 'scrooloose/nerdtree'
 Plug '~/.fzf'
 Plug 'fatih/vim-go'
 Plug 'cormacrelf/vim-colors-github'
-Plug 'rhysd/vim-clang-format'
 Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'easymotion/vim-easymotion'
-Plug 'vim-syntastic/syntastic'
 Plug 'rust-lang/rust.vim'
-Plug 'elmcast/elm-vim'
 Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 Plug 'neoclide/coc.nvim', {'branch': 'release'}
-Plug 'prabirshrestha/async.vim'
-Plug 'prabirshrestha/vim-lsp'
-Plug 'udalov/kotlin-vim'
-Plug 'neovimhaskell/haskell-vim'
-Plug 'monkoose/fzf-hoogle.vim'
-Plug 'zah/nim.vim'
 call plug#end()
 
 filetype plugin indent on
 syntax on
 
+set ttymouse=sgr
 set laststatus=2
 set path+=**
 set noswapfile
@@ -52,6 +44,7 @@ set showcmd
 set cursorline
 set ruler
 set hlsearch
+set hidden
 colorscheme github
 
 let g:lightline = { 'colorscheme': 'github' }
@@ -175,8 +168,6 @@ let g:go_info_mode = 'gopls'
 let g:go_list_type = "quickfix"
 let g:go_fmt_command = "gofumports"
 let g:go_fmt_fail_silently = 1
-let g:syntastic_go_checkers = ['golangci-lint', 'govet']
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
 let g:go_auto_type_info = 1 
 let g:go_highlight_types = 1
 let g:go_highlight_fields = 1
@@ -238,56 +229,6 @@ nmap <silent> gr <Plug>(coc-references)
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
-let g:syntastic_python_checkers=['mypy']
-
-if executable(expand('~/lsp/kotlin-language-server/server/bin/kotlin-language-server'))
-    au User lsp_setup call lsp#register_server({
-        \ 'name': 'kotlin-language-server',
-        \ 'cmd': {server_info->[
-        \     &shell,
-        \     &shellcmdflag,
-        \     expand('~/lsp/kotlin-language-server/server/bin/kotlin-language-server')
-        \ ]},
-        \ 'whitelist': ['kotlin']
-        \ })
-endif
-
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:elm_syntastic_show_warnings = 1
-
-let g:haskell_classic_highlighting = 1
-let g:haskell_indent_if = 3
-let g:haskell_indent_case = 2
-let g:haskell_indent_let = 4
-let g:haskell_indent_where = 6
-let g:haskell_indent_before_where = 2
-let g:haskell_indent_after_bare_where = 2
-let g:haskell_indent_do = 3
-let g:haskell_indent_in = 1
-let g:haskell_indent_guard = 2
-let g:haskell_indent_case_alternative = 1
-let g:cabal_indent_section = 2
-
-" Open stack repl
-au Filetype hs nmap <Leader>th :<C-u>ter ++close stack repl<CR>
-
-au Filetype kt nmap <leader>b :<C-u>ter ++close kotlinc %t<CR>
-au Filetype kt nmap <Leader>t :<C-u>ter ++close kotlinc-jvm<CR>
-set ttymouse=sgr
-fun! JumpToDef()
-  if exists("*GotoDefinition_" . &filetype)
-    call GotoDefinition_{&filetype}()
-  else
-    exe "norm! \<C-]>"
-  endif
-endf
-
 " Jump to tag
 nn <M-g> :call JumpToDef()<cr>
 ino <M-g> <esc>:call JumpToDef()<cr>i
-
-augroup HoogleMaps
-  autocmd!
-  autocmd FileType haskell setlocal keywordprg=:Hoogle
-augroup END

@@ -143,3 +143,4 @@ function kotlinr() {
   kotlinc $1 -include-runtime -d out.jar
   java -jar out.jar
 }
+[ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"

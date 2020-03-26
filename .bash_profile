@@ -14,9 +14,8 @@ export PATH=$HOME/.local/bin/:$PATH
 export PATH=$HOME/.opam/default/bin/:$PATH
 export PATH=$PATH:/home/jbpratt/Android/Sdk/platform-tools:/home/jbpratt/Android/Sdk/tools:/home/jbpratt/Android/Sdk/tools/bin
 export PATH="$HOME/.node_modules/bin:$PATH"
+export PATH="$HOME/.nimble/bin:$PATH"
 export npm_config_prefix=~/.node_modules
-eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
-eval $(/home/linuxbrew/.linuxbrew/bin/brew shellenv)
 
 # opam configuration
 test -r /home/jbpratt/.opam/opam-init/init.sh && . /home/jbpratt/.opam/opam-init/init.sh > /dev/null 2> /dev/null || true
