@@ -35,6 +35,7 @@ source /usr/share/fzf/key-bindings.bash
 source /usr/share/fzf/completion.bash
 complete -C aws_completer aws
 source <(golangci-lint completion bash)
+eval "$(gh completion)"
 
 #
 # # ex - archive extractor

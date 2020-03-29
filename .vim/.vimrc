@@ -48,6 +48,7 @@ set hidden
 colorscheme github
 
 let g:lightline = { 'colorscheme': 'github' }
+
 let mapleader = ","
 function! CocCurrentFunction()
     return get(b:, 'coc_current_function', '')
