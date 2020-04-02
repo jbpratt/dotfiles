@@ -45,6 +45,8 @@ set cursorline
 set ruler
 set hlsearch
 set hidden
+set listchars=eol:¬,tab:->,trail:~,extends:>,precedes:<,space:•
+set list
 colorscheme github
 
 let g:lightline = { 'colorscheme': 'github' }
