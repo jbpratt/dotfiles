@@ -5,19 +5,22 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin()
-Plug 'scrooloose/nerdtree'
-Plug '~/.fzf'
-Plug 'fatih/vim-go'
+Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'cormacrelf/vim-colors-github'
 Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'easymotion/vim-easymotion'
-Plug 'rust-lang/rust.vim'
+Plug 'rust-lang/rust.vim',{ 'for': 'rust' }
 Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
-Plug 'neoclide/coc.nvim', {'branch': 'release'}
+Plug 'tpope/vim-surround'
+Plug 'govim/govim', { 'for': 'go' }
+Plug 'prabirshrestha/asyncomplete.vim', { 'for': 'go' }
+Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash'] }
 call plug#end()
 
-filetype plugin indent on
+filetype indent on
 syntax on
 
 set ttymouse=sgr
@@ -47,6 +50,8 @@ set hlsearch
 set hidden
 set listchars=eol:¬,tab:->,trail:~,extends:>,precedes:<,space:•
 set list
+set updatetime=500
+set backspace=2
 colorscheme github
 
 let g:lightline = { 'colorscheme': 'github' }
@@ -129,69 +134,11 @@ function! s:build_go_files()
   endif
 endfunction
 
-function! s:build_kotlin_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+\.kt$'
-    return ""
-  endif
-endfunction
-
-au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-au FileType go nmap <leader>taj :GoAddTags json<cr>
-au FileType go nmap <leader>tat :GoAddTags toml<cr>
-au FileType go nmap <leader>tab :GoAddTags bson<cr>:GoAddTags bson,omitempty<cr>
-au FileType go nmap <leader>tad :GoAddTags db<cr>
-au FileType go nmap <leader>trj :GoRemoveTags json<cr>
-au FileType go nmap <leader>trb :GoRemoveTags bson<cr>
-au FileType go nmap <leader>trd :GoRemoveTags db<cr>
-au FileType go nmap <leader>tr :GoRemoveTags<cr>
-au filetype go inoremap <buffer> kk .<C-x><C-o>
-
-augroup go
-  autocmd!
-  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
-  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-  autocmd FileType go nmap <leader>t  <Plug>(go-test)
-  autocmd FileType go nmap <leader>r  <Plug>(go-run)
-  autocmd FileType go nmap <Leader>i <Plug>(go-info)
-  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
-  autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
-  autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
-  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
-augroup END
-
-" let g:go_metalinter_command='golangci-lint'
-" let g:go_metalinter_autosave = 1
-let g:go_metalinter_enabled = ['deadcode', 'errcheck', 'gosimple', 'govet', 'staticcheck', 'typecheck', 'unused', 'varcheck']
-let g:go_def_mode='gopls'
-let g:go_info_mode = 'gopls'
-let g:go_list_type = "quickfix"
-let g:go_fmt_command = "gofumports"
-let g:go_fmt_fail_silently = 1
-let g:go_auto_type_info = 1 
-let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_function_calls = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_generate_tags = 1
-let g:go_highlight_space_tab_error = 0
-let g:go_highlight_array_whitespace_error = 0
-let g:go_highlight_trailing_whitespace_error = 0
-let g:go_highlight_extra_types = 1
-
-"
 autocmd FileType c ClangFormatAutoEnable
 
 " easymotion
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
-
+" 
 " Jump to anywhere
 " `s{char}{char}{label}`
 " Need one more keystroke, but on average, it may be more comfortable.
@@ -235,3 +182,24 @@ inoremap <silent><expr> <c-space> coc#refresh()
 " Jump to tag
 nn <M-g> :call JumpToDef()<cr>
 ino <M-g> <esc>:call JumpToDef()<cr>i
+
+augroup go
+  function! Omni()
+    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+                        \ 'name': 'omni',
+                        \ 'whitelist': ['go'],
+                        \ 'completor': function('asyncomplete#sources#omni#completor')
+                        \  }))
+  endfunction
+
+  au VimEnter * :call Omni()
+
+  inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+  inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
+
+  command! Cnext try | cbelow | catch | cabove 9999 | catch | endtry
+  nnoremap <leader>m :Cnext<CR>
+augroup END
+
+set pastetoggle=<F3>
