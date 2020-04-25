@@ -1,3 +1,11 @@
 [user]
 	email = jbpratt78@gmail.com
 	name = jbpratt78
+[commit]
+    gpgsign = true
+[merge]
+    ff = only
+[pull]
+    rebase = true
+[rebase]
+    autoSquash = true

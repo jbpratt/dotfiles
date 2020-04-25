@@ -5,19 +5,20 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin()
-Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
 Plug 'cormacrelf/vim-colors-github'
-Plug 'tpope/vim-fugitive'
 Plug 'itchyny/lightline.vim'
 Plug 'easymotion/vim-easymotion'
-Plug 'rust-lang/rust.vim',{ 'for': 'rust' }
-Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
+Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
+Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 Plug 'govim/govim', { 'for': 'go' }
-Plug 'prabirshrestha/asyncomplete.vim', { 'for': 'go' }
-Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
-Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash'] }
+Plug 'prabirshrestha/asyncomplete.vim'
+Plug 'yami-beta/asyncomplete-omni.vim'
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash', 'rust'] }
+Plug 'KabbAmine/zeavim.vim'
 call plug#end()
 
 filetype indent on
@@ -52,9 +53,9 @@ set listchars=eol:¬,tab:->,trail:~,extends:>,precedes:<,space:•
 set list
 set updatetime=500
 set backspace=2
+set timeoutlen=1000 ttimeoutlen=0
+set signcolumn=number
 colorscheme github
-
-let g:lightline = { 'colorscheme': 'github' }
 
 let mapleader = ","
 function! CocCurrentFunction()
@@ -73,8 +74,17 @@ let g:lightline = {
       \ },
       \ }
 
+nmap \e :Files<CR>
+nmap \r :Rg<CR>
+
 map <leader>w :w!<cr>
 inoremap jj <esc>
+
+"" Zeal
+nmap <leader>z <Plug>Zeavim
+vmap <leader>z <Plug>ZVVisSelection
+nmap gz <Plug>ZVOperator
+nmap <leader><leader>z <Plug>ZVKeyDocset
 
 "" Switching windows
 noremap <C-j> <C-w>j
@@ -104,12 +114,12 @@ nnoremap <Leader>html :-1read $HOME/.vim/.skeleton.html<CR>
 nnoremap <Leader>V :edit $MYVIMRC<CR>
 
 " Open files in horizontal split
-nnoremap <silent> <Leader>z :call fzf#run({
+nnoremap <silent> <Leader>zz :call fzf#run({
 \   'down': '40%',
 \   'sink': 'botright split' })<CR>
 
 " Open files in vertical horizontal split
-nnoremap <silent> <Leader>Z :call fzf#run({
+nnoremap <silent> <Leader>ZZ :call fzf#run({
 \   'right': winwidth('.') / 2,
 \   'sink':  'vertical botright split' })<CR>
 
@@ -203,3 +213,6 @@ augroup go
 augroup END
 
 set pastetoggle=<F3>
+au InsertLeave * silent! set nopaste
+
+command! -bang ProjectFiles call fzf#vim#files('~/projects', <bang>0)
