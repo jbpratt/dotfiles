@@ -19,12 +19,9 @@ if [ -f ~/.bash_profile ]; then
 fi
 
 export GO111MODULE=on
+export GOPROXY=http://localhost:3000
 export PS1="\W >\[$(tput sgr0)\]"
-export PATH="$PATH:$HOME/.rvm/bin"
 export PATH="$PATH:$HOME/.cargo/bin"
-export PATH="$PATH:$HOME/flutter/bin"
-export ANDROID_HOME="$HOME/Android/Sdk"
-export ANDROID_SDK_ROOT=$ANDROID_HOME
 
 xhost +local:root >/dev/null 2>&1
 
@@ -69,82 +66,81 @@ HISTFILESIZE=
 
 # https://github.com/junegunn/fzf/wiki/examples
 fd() {
-  local dir
-  dir=$(find ${1:-.} -path '*/\.*' -prune \
-                  -o -type d -print 2> /dev/null | fzf +m) &&
-  cd "$dir"
+	local dir
+	dir=$(find ${1:-.} -path '*/\.*' -prune \
+		-o -type d -print 2>/dev/null | fzf +m) &&
+		cd "$dir"
 }
 
 fkill() {
-    local pid
-    if [ "$UID" != "0" ]; then
-        pid=$(ps -f -u $UID | sed 1d | fzf -m | awk '{print $2}')
-    else
-        pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
-    fi
+	local pid
+	if [ "$UID" != "0" ]; then
+		pid=$(ps -f -u $UID | sed 1d | fzf -m | awk '{print $2}')
+	else
+		pid=$(ps -ef | sed 1d | fzf -m | awk '{print $2}')
+	fi
 
-    if [ "x$pid" != "x" ]
-    then
-        echo $pid | xargs kill -${1:-9}
-    fi
+	if [ "x$pid" != "x" ]; then
+		echo $pid | xargs kill -${1:-9}
+	fi
 }
 
 # fbr - checkout git branch (including remote branches), sorted by most recent commit, limit 30 last branches
 fbr() {
-  local branches branch
-  branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
-  branch=$(echo "$branches" |
-           fzf-tmux -d $(( 2 + $(wc -l <<< "$branches") )) +m) &&
-  git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
+	local branches branch
+	branches=$(git for-each-ref --count=30 --sort=-committerdate refs/heads/ --format="%(refname:short)") &&
+		branch=$(echo "$branches" |
+			fzf-tmux -d $((2 + $(wc -l <<<"$branches"))) +m) &&
+		git checkout $(echo "$branch" | sed "s/.* //" | sed "s#remotes/[^/]*/##")
 }
 
 da() {
-  local cid
-  cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
+	local cid
+	cid=$(docker ps -a | sed 1d | fzf -1 -q "$1" | awk '{print $1}')
 
-  [ -n "$cid" ] && docker start "$cid" && docker attach "$cid"
+	[ -n "$cid" ] && docker start "$cid" && docker attach "$cid"
 }
 
 ds() {
-  local cid
-  cid=$(docker ps | sed 1d | fzf -q "$1" | awk '{print $1}')
+	local cid
+	cid=$(docker ps | sed 1d | fzf -q "$1" | awk '{print $1}')
 
-  [ -n "$cid" ] && docker stop "$cid"
+	[ -n "$cid" ] && docker stop "$cid"
 }
 
 drm() {
-  local cid
-  cid=$(docker ps -a | sed 1d | fzf -q "$1" | awk '{print $1}')
+	local cid
+	cid=$(docker ps -a | sed 1d | fzf -q "$1" | awk '{print $1}')
 
-  [ -n "$cid" ] && docker rm "$cid"
+	[ -n "$cid" ] && docker rm "$cid"
 }
 
 source $HOME/gitstatus/gitstatus.plugin.sh
 
 function my_set_prompt() {
-  PS1='\w'
+	PS1='\w'
 
-  if gitstatus_query && [[ "$VCS_STATUS_RESULT" == ok-sync ]]; then
-    if [[ -n "$VCS_STATUS_LOCAL_BRANCH" ]]; then
-      PS1+=" ${VCS_STATUS_LOCAL_BRANCH//\\/\\\\}"  # escape backslash
-    else
-      PS1+=" @${VCS_STATUS_COMMIT//\\/\\\\}"       # escape backslash
-    fi
-    [[ "$VCS_STATUS_HAS_STAGED"    == 1 ]] && PS1+='+'
-    [[ "$VCS_STATUS_HAS_UNSTAGED"  == 1 ]] && PS1+='!'
-    [[ "$VCS_STATUS_HAS_UNTRACKED" == 1 ]] && PS1+='?'
-  fi
+	if gitstatus_query && [[ "$VCS_STATUS_RESULT" == ok-sync ]]; then
+		if [[ -n "$VCS_STATUS_LOCAL_BRANCH" ]]; then
+			PS1+=" ${VCS_STATUS_LOCAL_BRANCH//\\/\\\\}" # escape backslash
+		else
+			PS1+=" @${VCS_STATUS_COMMIT//\\/\\\\}" # escape backslash
+		fi
+		[[ "$VCS_STATUS_HAS_STAGED" == 1 ]] && PS1+='+'
+		[[ "$VCS_STATUS_HAS_UNSTAGED" == 1 ]] && PS1+='!'
+		[[ "$VCS_STATUS_HAS_UNTRACKED" == 1 ]] && PS1+='?'
+	fi
 
-  PS1+=' '
-  shopt -u promptvars  # disable expansion of '$(...)' and the like
+	PS1+=' '
+	shopt -u promptvars # disable expansion of '$(...)' and the like
 }
 
 gitstatus_stop && gitstatus_start
 PROMPT_COMMAND=my_set_prompt
 export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 function kotlinr() {
-  echo Compiling, please wait...
-  kotlinc $1 -include-runtime -d out.jar
-  java -jar out.jar
+	echo Compiling, please wait...
+	kotlinc $1 -include-runtime -d out.jar
+	java -jar out.jar
 }
 [ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"

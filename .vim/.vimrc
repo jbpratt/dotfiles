@@ -54,7 +54,6 @@ set list
 set updatetime=500
 set backspace=2
 set timeoutlen=1000 ttimeoutlen=0
-set signcolumn=number
 colorscheme github
 
 let mapleader = ","
