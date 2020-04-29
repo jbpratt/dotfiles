@@ -15,8 +15,8 @@ Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-surround'
 Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 Plug 'govim/govim', { 'for': 'go' }
-Plug 'prabirshrestha/asyncomplete.vim'
-Plug 'yami-beta/asyncomplete-omni.vim'
+Plug 'prabirshrestha/asyncomplete.vim', { 'for': 'go' }
+Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
 Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash', 'rust'] }
 Plug 'KabbAmine/zeavim.vim'
 call plug#end()

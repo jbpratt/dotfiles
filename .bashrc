@@ -19,7 +19,7 @@ if [ -f ~/.bash_profile ]; then
 fi
 
 export GO111MODULE=on
-export GOPROXY=http://localhost:3000
+export GOPROXY=http://localhost:3000,direct
 export PS1="\W >\[$(tput sgr0)\]"
 export PATH="$PATH:$HOME/.cargo/bin"
 
