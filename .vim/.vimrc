@@ -17,7 +17,7 @@ Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 Plug 'govim/govim', { 'for': 'go' }
 Plug 'prabirshrestha/asyncomplete.vim', { 'for': 'go' }
 Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
-Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash', 'rust'] }
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash', 'rust', 'cpp'] }
 Plug 'KabbAmine/zeavim.vim'
 call plug#end()
 
@@ -201,7 +201,7 @@ augroup go
                         \  }))
   endfunction
 
-  au VimEnter * :call Omni()
+  au VimEnter *.go :call Omni()
 
   inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
   inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"

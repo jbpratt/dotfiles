@@ -143,4 +143,13 @@ function kotlinr() {
 	kotlinc $1 -include-runtime -d out.jar
 	java -jar out.jar
 }
-[ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"
+
+eval "$(zoxide init bash)"
+
+if [[ -x "$(command -v fw)" ]]; then
+	if [[ -x "$(command -v fzf)" ]]; then
+		eval "$(fw print-bash-setup -f 2>/dev/null)"
+	else
+		eval "$(fw print-bash-setup 2>/dev/null)"
+	fi
+fi
