@@ -153,3 +153,4 @@ if [[ -x "$(command -v fw)" ]]; then
 		eval "$(fw print-bash-setup 2>/dev/null)"
 	fi
 fi
+export DOCKER_BUILDKIT=1

@@ -143,8 +143,6 @@ function! s:build_go_files()
   endif
 endfunction
 
-autocmd FileType c ClangFormatAutoEnable
-
 " easymotion
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 " 
