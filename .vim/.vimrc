@@ -213,3 +213,4 @@ set pastetoggle=<F3>
 au InsertLeave * silent! set nopaste
 
 command! -bang ProjectFiles call fzf#vim#files('~/projects', <bang>0)
+au BufRead,BufNewFile *.md setlocal textwidth=80
