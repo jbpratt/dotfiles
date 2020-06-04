@@ -18,7 +18,9 @@ Plug 'govim/govim', { 'for': 'go' }
 Plug 'prabirshrestha/asyncomplete.vim', { 'for': 'go' }
 Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
 Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash', 'rust', 'cpp'] }
-Plug 'KabbAmine/zeavim.vim'
+Plug 'honza/vim-snippets'
+Plug 'SirVer/ultisnips'
+Plug 'szymonmaszke/vimpyter'
 call plug#end()
 
 filetype indent on
@@ -78,12 +80,6 @@ nmap \r :Rg<CR>
 
 map <leader>w :w!<cr>
 inoremap jj <esc>
-
-"" Zeal
-nmap <leader>z <Plug>Zeavim
-vmap <leader>z <Plug>ZVVisSelection
-nmap gz <Plug>ZVOperator
-nmap <leader><leader>z <Plug>ZVKeyDocset
 
 "" Switching windows
 noremap <C-j> <C-w>j
@@ -213,4 +209,24 @@ set pastetoggle=<F3>
 au InsertLeave * silent! set nopaste
 
 command! -bang ProjectFiles call fzf#vim#files('~/projects', <bang>0)
+
 au BufRead,BufNewFile *.md setlocal textwidth=80
+
+autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
+
+au BufRead,BufNewFile *.cfn.json set ft=cfn_json
+au BufRead,BufNewFile *.cfn.yml set ft=cfn_yaml
+au BufRead,BufNewFile *.cfn.yaml set ft=cfn_yaml
+autocmd BufWritePost *.cfn.* silent !cfn-format -w % 2>/dev/null
+
+" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+autocmd Filetype ipynb nmap <silent><Leader>b :VimpyterInsertPythonBlock<CR>
+autocmd Filetype ipynb nmap <silent><Leader>j :VimpyterStartJupyter<CR>
+autocmd Filetype ipynb nmap <silent><Leader>n :VimpyterStartNteract<CR>

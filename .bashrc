@@ -154,3 +154,4 @@ if [[ -x "$(command -v fw)" ]]; then
 	fi
 fi
 export DOCKER_BUILDKIT=1
+eval "$(aactivator init)"

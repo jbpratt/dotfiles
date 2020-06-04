@@ -1,0 +1,249 @@
+snippet +.skeleton
+	AWSTemplateFormatVersion: "2010-09-09"
+
+	Description: Write me
+
+	Metadata:
+	  # add metadata
+
+	Parameters:
+	  # add parameters
+
+	Mappings:
+	  # add mapping
+
+	Conditions:
+	  # add conditions
+
+	Resources:
+	  # add resources
+
+	Outputs:
+	  # add outputs
+
+snippet +.param
+	${0:TODO_PARAM_NAME}:
+	  Type: TODO_TYPE
+	  Description: TODO_DESC
+	  Default: TODO_DEFAULT
+	  AllowedValues:
+	    - TODO_ALLOWED_VALUE
+
+snippet +.metadata
+	${0:TODO_METADATA_NAME}:
+	  Description: TODO_DESC
+
+snippet +.mapping
+	${0:TODO_MAPPING_NAME}:
+	  TODO_KEY1:
+	    TODO_KEY2: TODO_VALUE
+
+snippet +.condition
+	${1:CONDITION_NAME}:
+	  TODO_FN
+
+snippet +.resource
+	${0:TODO_RESOURCE_NAME}:
+	  Type: TODO_RESOURCE_TYPE
+	  Properties:
+	    TODO_PROPERTIES
+
+snippet +.out
+	${0:TODO_OUTPUT_NAME}:
+	  Description: TODO_DESC
+	  Value: TODO_VALUE
+	  Export:
+	    TODO_EXPORTS
+
+# Functions
+snippet fn.ref
+	!Ref ${0:RESOURCE}
+
+snippet fn.get-att
+	!GetAtt ${1:TARGET}.${2:ATTR}
+
+snippet sub
+	!Sub ${1:STRING}
+
+snippet sub+
+	!Sub |
+	  ${1}
+
+snippet join
+	!Join [ ${1:DELIM}, [ ${2:VALUES} ] ]
+
+snippet find-in-map
+	!FindInMap [ ${1:ELEMENTS} ]
+
+# Condition functions
+snippet ==
+	!Equals [ ${1:REFERNCE}, ${2:VALUE} ]
+
+snippet +=
+	!Not [ !Equals [ ${1:REFERENCE}, ${2:VALUE} ] ]
+
+snippet if
+	!If [ ${1:CONDITION}, ${2:TRUE_CASE}, ${3:FALSE_CASE} ]
+
+snippet &&
+	!And [ ${1:CONDITIONS} ]
+
+snippet ||
+	!Or [ ${1:CONDITIONS} ]
+
+# pseudo params
+snippet pp.account-id
+	AWS::AccountId
+
+snippet pp.region
+	AWS::Region
+
+snippet pp.stack-id
+	AWS::StackId
+
+snippet pp.stack-name
+	AWS::StackName
+
+snippet pp.no-value
+	AWS::NoValue
+
+# Resources
+snippet +.res.launch-config
+	${0:LaunchConfig}:
+	  Type: "AWS::AutoScaling::LaunchConfiguration"
+	  Properties:
+	    KeyName: bv-nexus
+	    ImageId: +.etAtt Image.ImageId
+	    InstanceType:  +.ef InstanceType
+	    IamInstanceProfile: +.ef InstanceProfile
+	    SecurityGroups:
+	      - +.etAtt NexusSecurityGroups.InternalTrafficId
+	    InstanceMonitoring: false
+	    UserData:
+	      Fn::Base64: >
+	        #!/bin/bash
+	        echo whats up
+
+snippet +.res.asg
+	${0:AutoScalingGroup}:
+	  Type: "AWS::AutoScaling::AutoScalingGroup"
+	  Properties:
+	    LaunchConfigurationName: +.ef LaunchConfig
+	    AvailabilityZones: +.etAtt Vpc.PrivateSubnetAZs
+	    VPCZoneIdentifier: +.etAtt Vpc.PrivateSubnetIds
+	    MinSize: 1
+	    MaxSize: 1
+	    DesiredCapacity: 1
+	    LoadBalancerNames: []
+	    NotificationConfigurations:
+	      -
+	        NotificationTypes:
+	          - autoscaling:EC2_INSTANCE_LAUNCH
+	        TopicARN: +.ub arn:aws:sns:${AWS::Region}:${AWS::AccountId}:route53-private-record-set-asg
+	    Tags:
+	      -
+	        Key: Name
+	        Value: TODO_NAME
+	        PropagateAtLaunch: true
+	      -
+	        Key: bv:nexus:role
+	        Value: TODO_ROLE
+	        PropagateAtLaunch: true
+
+snippet +.res.role
+	${0:InstanceRole}:
+	  Type: "AWS::IAM::Role"
+	  Properties:
+	    Path: /
+	    Policies:
+	      -
+	        PolicyName: TODO_POLICY_NAME
+	        PolicyDocument:
+	          Statement:
+	            -
+	              Effect: Allow
+	              Action:
+	                - TODO_ACTION
+	              Resource:
+	                - TODO_RESOURCE
+	    AssumeRolePolicyDocument:
+	      Statement:
+	        -
+	          Effect: Allow
+	          Principal:
+	            Service:
+	              - ec2.amazonaws.com
+	          Action:
+	            - sts:AssumeRole
+
+snippet +.res.policy
+	-
+	  PolicyName: ${1:NAME}
+	  PolicyDocument:
+	    Statement:
+	      -
+	        Effect: TODO_EFFECT
+	        Action:
+	          - TODO_ACTION
+	        Resource:
+	          - TODO_RESOURCE
+
+snippet +.res.instance-profile
+	${0:InstanceProfile}:
+	  Type: "AWS::IAM::InstanceProfile"
+	  Properties:
+	    Path: /
+	    Roles:
+	      - +.ef InstanceRole
+
+snippet +.res.elb
+	${0:LoadBalancer}:
+	  Type: "AWS::ElasticLoadBalancing::LoadBalancer"
+	  Properties:
+	    Scheme: internal
+	    Subnets: +.etAtt Vpc.PrivateSubnetIds
+	    SecurityGroups:
+	      - +.etAtt NexusSecurityGroups.InternalTrafficId
+	    Listeners:
+	      -
+	        Protocol: HTTP
+	        LoadBalancerPort: 80
+	        InstanceProtocol: HTTP
+	        InstancePort: 8080
+	    HealthCheck:
+	      HealthyThreshold: 2
+	      Interval: 15
+	      Target: TCP:8080
+	      Timeout: 5
+	      UnhealthyThreshold: 3
+
+# BV Resources
+snippet +.bv.nexus-vpc
+	${0:Vpc}:
+	  Type: "Custom::NexusVpc"
+	  Version: "1.0"
+	  Properties:
+	    ServiceToken: +.ub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:CommonCfnResource"
+
+snippet +.bv.image-info
+	${0:Image}:
+	  Type: "Custom::EC2ImageInfo"
+	  Version: "1.0"
+	  Properties:
+	    ServiceToken: +.ub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:CommonCfnResource"
+	    Version: "2016.03.03"
+	    # this
+	    ImageName: TODO_IMAGE_NAME
+	    # or this
+	    Version: 2016.03.3
+	    InstanceType: +.ef InstanceType
+	    VirtualizationType: TODO_VIRTUALIZATION_TYPE
+	    StorageType: TODO_STORAGE_TYPE
+
+snippet +.bv.security-group
+	${0:NexusSecurityGroups}:
+	  Type: "Custom::NexusSecurityGroups"
+	  Version: "1.0"
+	  Properties:
+	    ServiceToken: +.ub "arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:CommonCfnResource"
+	${1}
