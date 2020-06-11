@@ -17,7 +17,7 @@ Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
 Plug 'govim/govim', { 'for': 'go' }
 Plug 'prabirshrestha/asyncomplete.vim', { 'for': 'go' }
 Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
-Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['python', 'bash', 'rust', 'cpp'] }
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['javascript', 'typescript', 'python', 'bash', 'rust', 'cpp', 'cfn_yaml', 'cfn_json'] }
 Plug 'honza/vim-snippets'
 Plug 'SirVer/ultisnips'
 Plug 'szymonmaszke/vimpyter'
