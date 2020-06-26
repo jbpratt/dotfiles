@@ -20,7 +20,7 @@ Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
 Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['javascript', 'typescript', 'python', 'bash', 'rust', 'cpp', 'cfn_yaml', 'cfn_json'] }
 Plug 'honza/vim-snippets'
 Plug 'SirVer/ultisnips'
-Plug 'szymonmaszke/vimpyter'
+Plug 'wellle/context.vim'
 call plug#end()
 
 filetype indent on
