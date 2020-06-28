@@ -5,23 +5,13 @@
 [[ $- != *i* ]] && return
 
 [ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+[[ -f $HOME/.bash_aliases ]] && source $HOME/.bash_aliases
+[[ -f $HOME/.private ]] && source $HOME/.private
+[[ -f $HOME/.bash_profile ]] && source $HOME/.bash_profile
 
-if [ -f ~/.bash_aliases ]; then
-	source ~/.bash_aliases
-fi
-
-if [ -f ~/.private ]; then
-	source ~/.private
-fi
-
-if [ -f ~/.bash_profile ]; then
-	source ~/.bash_profile
-fi
-
-export GO111MODULE=on
-export GOPROXY=http://localhost:3000,direct
 export PS1="\W >\[$(tput sgr0)\]"
-export PATH="$PATH:$HOME/.cargo/bin"
+export HISTSIZE=
+export HISTFILESIZE=
 
 xhost +local:root >/dev/null 2>&1
 
@@ -36,6 +26,16 @@ source /usr/share/fzf/completion.bash
 complete -C aws_completer aws
 source <(golangci-lint completion bash)
 eval "$(gh completion)"
+eval "$(zoxide init bash)"
+eval "$(aactivator init)"
+
+if [[ -x "$(command -v fw)" ]]; then
+	if [[ -x "$(command -v fzf)" ]]; then
+		eval "$(fw print-bash-setup -f 2>/dev/null)"
+	else
+		eval "$(fw print-bash-setup 2>/dev/null)"
+	fi
+fi
 
 #
 # # ex - archive extractor
@@ -60,9 +60,6 @@ ex() {
 		echo "'$1' is not a valid file"
 	fi
 }
-
-HISTSIZE=
-HISTFILESIZE=
 
 # https://github.com/junegunn/fzf/wiki/examples
 fd() {
@@ -116,7 +113,6 @@ drm() {
 }
 
 source $HOME/gitstatus/gitstatus.plugin.sh
-
 function my_set_prompt() {
 	PS1='\w'
 
@@ -134,24 +130,5 @@ function my_set_prompt() {
 	PS1+=' '
 	shopt -u promptvars # disable expansion of '$(...)' and the like
 }
-
 gitstatus_stop && gitstatus_start
 PROMPT_COMMAND=my_set_prompt
-export MANPAGER="sh -c 'col -bx | bat -l man -p'"
-function kotlinr() {
-	echo Compiling, please wait...
-	kotlinc $1 -include-runtime -d out.jar
-	java -jar out.jar
-}
-
-eval "$(zoxide init bash)"
-
-if [[ -x "$(command -v fw)" ]]; then
-	if [[ -x "$(command -v fzf)" ]]; then
-		eval "$(fw print-bash-setup -f 2>/dev/null)"
-	else
-		eval "$(fw print-bash-setup 2>/dev/null)"
-	fi
-fi
-export DOCKER_BUILDKIT=1
-eval "$(aactivator init)"
