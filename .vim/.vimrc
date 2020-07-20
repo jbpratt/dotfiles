@@ -21,6 +21,9 @@ Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['javascript', 'typescrip
 Plug 'honza/vim-snippets'
 Plug 'SirVer/ultisnips'
 Plug 'wellle/context.vim'
+Plug 'sebdah/vim-delve'
+Plug 'Shougo/vimproc.vim', {'do' : 'make'}  " Needed to make sebdah/vim-delve work on Vim
+Plug 'Shougo/vimshell.vim'                  " Needed to make sebdah/vim-delve work on Vim
 call plug#end()
 
 filetype indent on
