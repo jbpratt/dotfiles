@@ -14,7 +14,6 @@ export HISTSIZE=
 export HISTFILESIZE=
 
 xhost +local:root >/dev/null 2>&1
-
 complete -cf sudo
 
 shopt -s checkwinsize
@@ -132,3 +131,4 @@ function my_set_prompt() {
 }
 gitstatus_stop && gitstatus_start
 PROMPT_COMMAND=my_set_prompt
+setxkbmap -option caps:escape

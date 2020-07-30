@@ -10,13 +10,7 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'cormacrelf/vim-colors-github'
 Plug 'itchyny/lightline.vim'
-Plug 'easymotion/vim-easymotion'
-Plug 'tpope/vim-fugitive'
-Plug 'tpope/vim-surround'
-Plug 'z0mbix/vim-shfmt', { 'for': 'sh' }
-Plug 'govim/govim', { 'for': 'go' }
-Plug 'prabirshrestha/asyncomplete.vim', { 'for': 'go' }
-Plug 'yami-beta/asyncomplete-omni.vim', { 'for': 'go' }
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['javascript', 'typescript', 'python', 'bash', 'rust', 'cpp', 'cfn_yaml', 'cfn_json'] }
 Plug 'honza/vim-snippets'
 Plug 'SirVer/ultisnips'
@@ -59,6 +53,7 @@ set list
 set updatetime=500
 set backspace=2
 set timeoutlen=1000 ttimeoutlen=0
+set pastetoggle=<F3>
 colorscheme github
 
 let mapleader = ","
@@ -103,12 +98,7 @@ noremap <Leader>g :<C-u>vsplit<CR>
 noremap <Leader>tt :<C-u>term<CR>
 noremap <Leader>vt :<C-u>vert term<CR>
 
-"" Git
-noremap <Leader>ga :Gwrite<CR>
-noremap <Leader>gc :Gcommit<CR>
-
 nnoremap <Leader>html :-1read $HOME/.vim/.skeleton.html<CR>
-
 nnoremap <Leader>V :edit $MYVIMRC<CR>
 
 " Open files in horizontal split
@@ -142,41 +132,71 @@ function! s:build_go_files()
   endif
 endfunction
 
-" easymotion
-let g:EasyMotion_do_mapping = 0 " Disable default mappings
-" 
-" Jump to anywhere
-" `s{char}{char}{label}`
-" Need one more keystroke, but on average, it may be more comfortable.
-nmap s <Plug>(easymotion-overwin-f2)
+au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 
-" Turn on case-insensitive feature
-let g:EasyMotion_smartcase = 1
+augroup go
+  autocmd!
+  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
+  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
+  autocmd FileType go nmap <leader>t  <Plug>(go-test)
+  autocmd FileType go nmap <leader>r  <Plug>(go-run)
+  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
+  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
+  autocmd FileType go nmap <Leader>i <Plug>(go-info)
+  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
+  autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
+  autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
+  autocmd FileType go nmap <leader>taj :GoAddTags json<cr>
+  autocmd FileType go nmap <leader>tat :GoAddTags toml<cr>
+  autocmd FileType go nmap <leader>tab :GoAddTags bson<cr>:GoAddTags bson,omitempty<cr>
+  autocmd FileType go nmap <leader>tad :GoAddTags db<cr>
+  autocmd FileType go nmap <leader>trj :GoRemoveTags json<cr>
+  autocmd FileType go nmap <leader>trb :GoRemoveTags bson<cr>
+  autocmd FileType go nmap <leader>trd :GoRemoveTags db<cr>
+  autocmd FileType go nmap <leader>tr :GoRemoveTags<cr>
+  autocmd filetype go inoremap <buffer> kk .<C-x><C-o>
+  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
+  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
+  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
+  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
+augroup END
 
-" JK motions: Line motions
-map <Leader>j <Plug>(easymotion-j)
-map <Leader>k <Plug>(easymotion-k)
+let g:syntastic_go_checkers = ['golint', 'govet']
+let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+let g:go_metalinter_command='golangci-lint'
+let g:go_def_mode='gopls'
+let g:go_info_mode = 'gopls'
+let g:go_list_type = "quickfix"
+let g:go_fmt_command = "goimports"
+let g:go_fmt_fail_silently = 1
+let g:go_auto_type_info = 1 
+let g:go_highlight_types = 1
+let g:go_highlight_fields = 1
+let g:go_highlight_functions = 1
+let g:go_highlight_function_calls = 1
+let g:go_highlight_methods = 1
+let g:go_highlight_operators = 1
+let g:go_highlight_build_constraints = 1
+let g:go_highlight_structs = 1
+let g:go_highlight_generate_tags = 1
+let g:go_highlight_space_tab_error = 1
+let g:go_highlight_array_whitespace_error = 1
+let g:go_highlight_trailing_whitespace_error = 1
+let g:go_highlight_extra_types = 1
 
 " Rust config
 let g:rustfmt_autosave = 1
 
-" sh fmt
-let g:shfmt_fmt_on_save = 1
-
 nmap <silent> <leader>u <Plug>(coc-references)
 nmap <silent> <leader>p :call CocActionAsync('format')<CR>
-
 " Remap for rename current word
 nmap <leader>rn <Plug>(coc-rename)
-
 " Remap for format selected region
 xmap <leader>f  <Plug>(coc-format-selected)
 nmap <leader>f  <Plug>(coc-format-selected)
-
 " Use `[g` and `]g` to navigate diagnostics
 nmap <silent> [g <Plug>(coc-diagnostic-prev)
 nmap <silent> ]g <Plug>(coc-diagnostic-next)
-
 " Remap keys for gotos
 nmap <silent> gd <Plug>(coc-definition)
 nmap <silent> gy <Plug>(coc-type-definition)
@@ -185,30 +205,6 @@ nmap <silent> gr <Plug>(coc-references)
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
-" Jump to tag
-nn <M-g> :call JumpToDef()<cr>
-ino <M-g> <esc>:call JumpToDef()<cr>i
-
-augroup go
-  function! Omni()
-    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-                        \ 'name': 'omni',
-                        \ 'whitelist': ['go'],
-                        \ 'completor': function('asyncomplete#sources#omni#completor')
-                        \  }))
-  endfunction
-
-  au VimEnter *.go :call Omni()
-
-  inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-  inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-  inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
-
-  command! Cnext try | cbelow | catch | cabove 9999 | catch | endtry
-  nnoremap <leader>m :Cnext<CR>
-augroup END
-
-set pastetoggle=<F3>
 au InsertLeave * silent! set nopaste
 
 command! -bang ProjectFiles call fzf#vim#files('~/projects', <bang>0)
@@ -222,14 +218,9 @@ au BufRead,BufNewFile *.cfn.yml set ft=cfn_yaml
 au BufRead,BufNewFile *.cfn.yaml set ft=cfn_yaml
 autocmd BufWritePost *.cfn.* silent !cfn-format -w % 2>/dev/null
 
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
 let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
-
-autocmd Filetype ipynb nmap <silent><Leader>b :VimpyterInsertPythonBlock<CR>
-autocmd Filetype ipynb nmap <silent><Leader>j :VimpyterStartJupyter<CR>
-autocmd Filetype ipynb nmap <silent><Leader>n :VimpyterStartNteract<CR>
