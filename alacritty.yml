@@ -159,39 +159,34 @@ env:
 # If `true`, bold text is drawn using the bright color variants.
 #draw_bold_text_with_bright_colors: false
 
-# Colors (Oceanic Next)
+# Colors (Srcery)
 colors:
   # Default colors
   primary:
-    background: '#121E24'
-    foreground: '#d8dee9'
-
-  # Colors the cursor will use if `custom_cursor_colors` is true
-  cursor:
-    text: '#1b2b34'
-    cursor: '#ffffff'
+    background: '0x1c1b19'
+    foreground: '0xfce8c3'
 
   # Normal colors
   normal:
-    black:   '#343d46'
-    red:     '#EC5f67'
-    green:   '#99C794'
-    yellow:  '#FAC863'
-    blue:    '#6699cc'
-    magenta: '#c594c5'
-    cyan:    '#5fb3b3'
-    white:   '#d8dee9'
+    black:   '0x1c1b19'
+    red:     '0xef2f27'
+    green:   '0x519f50'
+    yellow:  '0xfbb829'
+    blue:    '0x2c78bf'
+    magenta: '0xe02c6d'
+    cyan:    '0x0aaeb3'
+    white:   '0xd0bfa1'
 
   # Bright colors
   bright:
-    black:   '#343d46'
-    red:     '#EC5f67'
-    green:   '#99C794'
-    yellow:  '#FAC863'
-    blue:    '#6699cc'
-    magenta: '#c594c5'
-    cyan:    '#5fb3b3'
-    white:   '#d8dee9'
+    black:   '0x918175'
+    red:     '0xf75341'
+    green:   '0x98bc37'
+    yellow:  '0xfed06e'
+    blue:    '0x68a8e4'
+    magenta: '0xff5c8f'
+    cyan:    '0x53fde9'
+    white:   '0xfce8c3'
 
 # Visual Bell
 #

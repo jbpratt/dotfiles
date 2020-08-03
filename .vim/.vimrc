@@ -8,7 +8,11 @@ call plug#begin()
 Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+" themes
 Plug 'cormacrelf/vim-colors-github'
+Plug 'morhetz/gruvbox'
+Plug 'srcery-colors/srcery-vim'
+
 Plug 'itchyny/lightline.vim'
 Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['javascript', 'typescript', 'python', 'bash', 'rust', 'cpp', 'cfn_yaml', 'cfn_json'] }
@@ -54,7 +58,8 @@ set updatetime=500
 set backspace=2
 set timeoutlen=1000 ttimeoutlen=0
 set pastetoggle=<F3>
-colorscheme github
+set background=dark
+colorscheme srcery
 
 let mapleader = ","
 function! CocCurrentFunction()
@@ -62,7 +67,7 @@ function! CocCurrentFunction()
 endfunction
 
 let g:lightline = {
-      \ 'colorscheme': 'github',
+      \ 'colorscheme': 'srcery',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
       \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
