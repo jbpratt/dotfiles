@@ -1,68 +1,57 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
+
 /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+xcode-select --install
+xcodebuild -license
+
 brew update
 brew upgrade
-brew install git wget coreutils \
-	go python htop vim zsh rust pyenv \
-	jq awscli itchyny/tap/gojo itchyny/tap/gojq \
-	shellcheck findutils tree lsd m-cli
-brew cask install iterm2 docker firefox slack visual-studio-code
+
+brew bundle --file=- <<RUBY
+tap 'homebrew/cask'
+tap 'homebrew/core'
+tap 'homebrew/services'
+RUBY
+
+brew install git wget coreutils bash htop vim \
+  awscli shellcheck findutils tree lsd
+
+brew cask install firefox alacritty rectangle
 brew cleanup
 git clone https://github.com/jbpratt78/dotfiles.git "$HOME/"
-cp "$HOME/dotfiles/.vim/.vimrc" "$HOME/.vimrc"
 
-/bin/cat <<EOM >~/.gitconfig
-[user]
-  name = jbpratt 
-  email = jbpratt78@gmail.com 
-[core]
-  editor = vim 
-[alias]
-  co = checkout
-  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
-  ci = commit
-  cm = commit
-  st = status
-  amend = git commit --amend
-  unstage = reset HEAD --
-[url "git@github.com:"]
-	insteadOf = https://github.com/
+echo "/usr/local/bin/bash" | sudo tee -a /etc/shells
+chsh -s /usr/local/bin/bash
+
+ln -s "$HOME/dotfiles/.vim/.vimrc" "$HOME/.vimrc"
+ln -s "$HOME/dotfiles/.bash_profile" "$HOME/.bash_profile"
+ln -s "$HOME/dotfiles/.bash_aliases" "$HOME/.bash_aliases"
+ln -s "$HOME/dotfiles/.gitconfig" "$HOME/.gitconfig"
+
+mkdir -p $HOME/.config/alacritty
+ln -s "$HOME/dotfiles/alacritty.yml" "$HOME/.config/alacritty/alacritty.yml"
+
+/bin/cat <<EOM >~/.bashrc
+
+[[ $- != *i* ]] && return
+
+[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+[[ -f $HOME/.bash_aliases ]] && source $HOME/.bash_aliases
+[[ -f $HOME/.private ]] && source $HOME/.private
+[[ -f $HOME/.bash_profile ]] && source $HOME/.bash_profile
+
+export PS1="\W >\[$(tput sgr0)\]"
+export HISTSIZE=
+export HISTFILESIZE=
+
+xhost +local:root >/dev/null 2>&1
+complete -cf sudo
+
+shopt -s checkwinsize
+shopt -s expand_aliases
+shopt -s histappend
 EOM
-
-# https://github.com/itchyny/setup/blob/master/zsh-plugins
-set -euxo pipefail
-
-target=~/.zsh
-
-if ! [ -e "$target" ]; then
-	mkdir -p "$target"
-fi
-
-# http://mimosa-pudica.net/zsh-incremental.html
-if ! [ -e "$target/incr-0.2.zsh" ]; then
-	curl -L http://mimosa-pudica.net/src/incr-0.2.zsh |
-		sed 's/^\(bindkey.*backward-delete-char-incr\)/# \1/' \
-			>"$target/incr-0.2.zsh"
-fi
-
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
-
-/bin/cat <<EOM >"$target/oh-my-zsh.sh"
-plugins=(
-  git
-  osx
-  docker
-	zsh-auto-fillin
-	zsh-git-alias
-	zsh-syntax-highlighting
-	zsh-history-substring-search
-)
-EOM
-
-source $target/oh-my-zsh.sh
-
-git clone https://github.com/bhilburn/powerlevel9k.git ~/.oh-my-zsh/custom/themes/powerlevel9k
-echo "ZSH_THEME=\"powerlevel9k/powerlevel9k\"" >>~/.zshrc
 
 if ! command -v osascript >/dev/null; then
 	echo "$cmdname: osascript not found" >/dev/stderr
@@ -145,23 +134,3 @@ defaults write NSGlobalDomain com.apple.springing.delay -float 0
 # Disable the warning before emptying the Trash
 defaults write com.apple.finder WarnOnEmptyTrash -bool false
 
-# Don’t display the annoying prompt when quitting iTerm
-defaults write com.googlecode.iterm2 PromptOnQuit -bool false
-
-backgrounds=(
-	IMG_1158.JPG
-	IMG_1294.JPG
-	IMG_1909.JPG
-	IMG_2163.JPG
-	IMG_2208.JPG
-	IMG_2252.JPG
-	IMG_2395.JPG
-)
-
-mkdir -p "$HOME/Pictures/backgrounds"
-for b in "${backgrounds[@]}"; do
-	curl -X GET "https://r7i6jef2h7.s3.us-east-2.amazonaws.com/$b"
-done
-
-m wallpaper "$HOME/Pictures/backgrounds/${backgrounds[1]}"
-m dock position LEFT

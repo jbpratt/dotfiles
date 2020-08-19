@@ -1,11 +1,21 @@
 [user]
-	email = jbpratt78@gmail.com
-	name = jbpratt78
+  email = jbpratt78@gmail.com
+  name = jbpratt78
 [commit]
-    gpgsign = true
+  gpgsign = true
 [merge]
-    ff = only
+  ff = only
 [pull]
-    rebase = true
+  rebase = true
 [rebase]
-    autoSquash = true
+  autoSquash = true
+[core]
+  editor = vim
+[alias]
+  co = checkout
+  lg = log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%C(bold blue)<%an>%Creset' --abbrev-commit
+  ci = commit
+  cm = commit
+  st = status
+  amend = git commit --amend
+  unstage = reset HEAD --
