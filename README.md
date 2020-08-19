@@ -1,1 +1,1 @@
-This repo contains my config files
+personal config files

@@ -8,6 +8,7 @@ export GOROOT=/usr/lib/go
 export GO111MODULE=on
 export GOPROXY=http://localhost:3000,direct
 export GOPATH="$HOME/go"
+export CGO_CFLAGS="-g -O2 -Wno-return-local-addr"
 export TERMINAL="alacritty"
 export npm_config_prefix=$HOME/.node_modules
 export TERMINFO=/usr/share/terminfo

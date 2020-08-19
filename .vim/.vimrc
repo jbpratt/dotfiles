@@ -1,3 +1,9 @@
+" This must be first, because it changes other options
+if &compatible
+  set nocompatible
+endif
+
+
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -10,15 +16,21 @@ Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 " themes
 Plug 'cormacrelf/vim-colors-github'
-Plug 'morhetz/gruvbox'
 Plug 'srcery-colors/srcery-vim'
 
 Plug 'itchyny/lightline.vim'
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
-Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': ['javascript', 'typescript', 'python', 'bash', 'rust', 'cpp', 'cfn_yaml', 'cfn_json'] }
-Plug 'honza/vim-snippets'
-Plug 'SirVer/ultisnips'
+
+Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': [
+      \ 'python', 
+      \ 'bash', 
+      \ 'rust', 
+      \ 'cpp', 
+      \ 'javascript', 'typescript',
+      \ 'cfn_yaml', 'cfn_json'] }
+
 Plug 'wellle/context.vim'
+
+Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'sebdah/vim-delve'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}  " Needed to make sebdah/vim-delve work on Vim
 Plug 'Shougo/vimshell.vim'                  " Needed to make sebdah/vim-delve work on Vim
@@ -27,44 +39,94 @@ call plug#end()
 filetype indent on
 syntax on
 
-set ttymouse=sgr
-set laststatus=2
-set path+=**
-set noswapfile
-set wildmenu
-set autowrite
-set number
-set autoindent
-set smartindent
-set smarttab
-set shiftwidth=2
-set softtabstop=2
-set tabstop=2
-set expandtab
-set ignorecase
-set smartcase
-set smarttab
-set mouse=a
-set showmode
-set showmatch
-set showcmd
-set cursorline
-set ruler
-set hlsearch
-set hidden
+set shell=$SHELL               " Set the default shell
+set history=1000               " The number of history items to remember
+set ttyfast                    " Set that we have a fast terminal
+set t_Co=256                   " Explicitly tell Vim that the terminal supports 256 colors
+set lazyredraw                 " Don't redraw vim in all situations
+set synmaxcol=500              " The max number of columns to try and highlight
+set noerrorbells               " Don't make noise
+set hlsearch                   " Highlight search terms
+set incsearch                  " Show searches as you type
+set autoread                   " Watch for file changes and auto update
+set autowrite                  " Write the contents of the file, if it has been modified
+set mouse=a                    " Enable using the mouse if terminal emulator
+set linebreak                  " Don't wrap in the middle of words
+set ignorecase                 " Ignore case when searching
+set smartcase                  " Ignore case if search is lowercase, otherwise case-sensitive
+set number                     " Shows line numbers
+set nojoinspaces               " Don't add 2 spaces when using J
+set autoindent                 " Copy indent from current line when starting a new line 
+set laststatus=2               " The last window will always have a status line
+set softtabstop=2              " Number of spaces that a <Tab> counts for while performing editing operations
+set tabstop=2                  " Number of spaces that a <Tab> in the file counts for
+set noswapfile                 " Do not use a swapfile for the buffer
+set wildmenu                   " command-line completion operates in an enhanced mode
+set shiftwidth=2               " Number of spaces to use for each step of (auto)indent
+set expandtab                  " Use the appropriate number of spaces to insert a <Tab>
+set smartindent                " Do smart autoindenting when starting a new line
+set showmode                   " current mode not shown
+set formatoptions+=j           " Remove comments when joining lines with J
+set smarttab                   " no smart tab size
+set showmatch                  " When a bracket is inserted, briefly jump to the matching one
+set showcmd                    " Show (partial) command in the last line of the screen.
+set cursorline                 " Highlight the screen line of the cursor with CursorLine
+set ruler                      " Show the line and column number of the cursor position, separated by a comma
+set hidden                     " When off a buffer is unloaded when it is abandoned
+set list                       " Show tabs as CTRL-I is displayed
+set path+=**                   " Make |:find| discover recursive paths
+set backspace=indent,eol,start " Backspace settings
+set pastetoggle=<F3>           " Toggle paste mode
+
 set listchars=eol:¬,tab:->,trail:~,extends:>,precedes:<,space:•
-set list
+
 set updatetime=500
-set backspace=2
-set timeoutlen=1000 ttimeoutlen=0
-set pastetoggle=<F3>
-set background=dark
+set ttymouse=sgr
+
+" Set mapping and key timeouts
+set timeout
+set timeoutlen=1000 
+set ttimeoutlen=100
+
+if has('clipboard')     " If the feature is available
+  set clipboard=unnamed " copy to the system clipboard
+  if has('unnamedplus')
+    set clipboard+=unnamedplus
+  endif
+endif
+
+" Create a directory if it doesn't exist yet
+function! s:EnsureDirectory(directory)
+  if !isdirectory(expand(a:directory))
+    call mkdir(expand(a:directory), 'p')
+  endif
+endfunction
+
+" Save backup files, storage is cheap, losing changes is sad
+set backup
+set backupdir=$HOME/.tmp/vim/backup
+call s:EnsureDirectory(&backupdir)
+
+" Write undo tree to a file to resume from next time the file is opened
+if has('persistent_undo')
+  set undolevels=2000            " The number of undo items to remember
+  set undofile                   " Save undo history to files locally
+  set undodir=$HOME/.vimundo     " Set the directory of the undofile
+  call s:EnsureDirectory(&undodir)
+endif
+
 colorscheme srcery
+set background=dark
 
 let mapleader = ","
 function! CocCurrentFunction()
     return get(b:, 'coc_current_function', '')
 endfunction
+
+" Ignore these folders for completions
+set wildignore+=.hg,.git,.svn                          " Version control
+set wildignore+=*.jpg,*.bmp,*.gif,*.png,*.jpeg         " binary images
+set wildignore+=*.o,*.obj,*.exe,*.dll,*.manifest,*.pyc " compiled object files
 
 let g:lightline = {
       \ 'colorscheme': 'srcery',
@@ -78,25 +140,31 @@ let g:lightline = {
       \ },
       \ }
 
+" Fuck you, help key.
+noremap <F1> <Nop>
+
+" Force root permission saves
+cnoremap w!! w !sudo tee % >/dev/null
+
 nmap \e :Files<CR>
 nmap \r :Rg<CR>
 
+" Easy saving
 map <leader>w :w!<cr>
-inoremap jj <esc>
 
-"" Switching windows
+" Switching windows
 noremap <C-j> <C-w>j
 noremap <C-k> <C-w>k
 noremap <C-l> <C-w>l
 noremap <C-h> <C-w>h
 
-"" Resizing windows
+" Resizing windows
 nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
 nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
 nnoremap <silent> <Leader>0 :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
 nnoremap <silent> <Leader>9 :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
 
-"" Split
+" Split
 noremap <Leader>h :<C-u>split<CR>
 noremap <Leader>g :<C-u>vsplit<CR>
 
@@ -223,9 +291,3 @@ au BufRead,BufNewFile *.cfn.yml set ft=cfn_yaml
 au BufRead,BufNewFile *.cfn.yaml set ft=cfn_yaml
 autocmd BufWritePost *.cfn.* silent !cfn-format -w % 2>/dev/null
 
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
-" If you want :UltiSnipsEdit to split your window.
-let g:UltiSnipsEditSplit="vertical"
