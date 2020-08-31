@@ -25,15 +25,25 @@ Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': [
       \ 'bash', 
       \ 'rust', 
       \ 'cpp', 
+      \ 'kotlin',
       \ 'javascript', 'typescript',
       \ 'cfn_yaml', 'cfn_json'] }
 
 Plug 'wellle/context.vim'
 
-Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
+Plug 'govim/govim'
+Plug 'prabirshrestha/asyncomplete.vim' " Needed to make govim/govim autocompletion work
+Plug 'yami-beta/asyncomplete-omni.vim' " Needed to make govim/govim autocompletion work
+
 Plug 'sebdah/vim-delve'
 Plug 'Shougo/vimproc.vim', {'do' : 'make'}  " Needed to make sebdah/vim-delve work on Vim
 Plug 'Shougo/vimshell.vim'                  " Needed to make sebdah/vim-delve work on Vim
+
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
+
+Plug 'udalov/kotlin-vim'
 call plug#end()
 
 filetype indent on
@@ -79,14 +89,16 @@ set backspace=indent,eol,start " Backspace settings
 set pastetoggle=<F3>           " Toggle paste mode
 
 set listchars=eol:¬,tab:->,trail:~,extends:>,precedes:<,space:•
-
+set nobackup
+set nowritebackup
 set updatetime=500
+set balloondelay=250
+set signcolumn=number
 set ttymouse=sgr
-
 " Set mapping and key timeouts
 set timeout
 set timeoutlen=1000 
-set ttimeoutlen=100
+set ttimeoutlen=0
 
 if has('clipboard')     " If the feature is available
   set clipboard=unnamed " copy to the system clipboard
@@ -102,10 +114,18 @@ function! s:EnsureDirectory(directory)
   endif
 endfunction
 
-" Save backup files, storage is cheap, losing changes is sad
-set backup
-set backupdir=$HOME/.tmp/vim/backup
-call s:EnsureDirectory(&backupdir)
+" govim/govim settings
+filetype plugin on
+filetype indent on
+autocmd! BufEnter,BufNewFile *.go syntax on
+autocmd! BufLeave *.go syntax off
+if has("patch-8.1.1904")
+  set completeopt+=popup
+  set completepopup=align:menu,border:off,highlight:Pmenu
+endif
+command! Cnext try | cbelow | catch | cabove 9999 | catch | endtry
+nnoremap <leader>m :Cnext<CR>
+" end govim settings
 
 " Write undo tree to a file to resume from next time the file is opened
 if has('persistent_undo')
@@ -207,55 +227,6 @@ endfunction
 
 au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
 
-augroup go
-  autocmd!
-  autocmd BufNewFile,BufRead *.go setlocal noexpandtab tabstop=4 shiftwidth=4
-  autocmd FileType go nmap <leader>b :<C-u>call <SID>build_go_files()<CR>
-  autocmd FileType go nmap <leader>t  <Plug>(go-test)
-  autocmd FileType go nmap <leader>r  <Plug>(go-run)
-  autocmd FileType go nmap <Leader>d <Plug>(go-doc)
-  autocmd FileType go nmap <Leader>c <Plug>(go-coverage-toggle)
-  autocmd FileType go nmap <Leader>i <Plug>(go-info)
-  autocmd FileType go nmap <Leader>l <Plug>(go-metalinter)
-  autocmd FileType go nmap <Leader>v <Plug>(go-def-vertical)
-  autocmd FileType go nmap <Leader>s <Plug>(go-def-split)
-  autocmd FileType go nmap <leader>taj :GoAddTags json<cr>
-  autocmd FileType go nmap <leader>tat :GoAddTags toml<cr>
-  autocmd FileType go nmap <leader>tab :GoAddTags bson<cr>:GoAddTags bson,omitempty<cr>
-  autocmd FileType go nmap <leader>tad :GoAddTags db<cr>
-  autocmd FileType go nmap <leader>trj :GoRemoveTags json<cr>
-  autocmd FileType go nmap <leader>trb :GoRemoveTags bson<cr>
-  autocmd FileType go nmap <leader>trd :GoRemoveTags db<cr>
-  autocmd FileType go nmap <leader>tr :GoRemoveTags<cr>
-  autocmd filetype go inoremap <buffer> kk .<C-x><C-o>
-  autocmd Filetype go command! -bang A call go#alternate#Switch(<bang>0, 'edit')
-  autocmd Filetype go command! -bang AV call go#alternate#Switch(<bang>0, 'vsplit')
-  autocmd Filetype go command! -bang AS call go#alternate#Switch(<bang>0, 'split')
-  autocmd Filetype go command! -bang AT call go#alternate#Switch(<bang>0, 'tabe')
-augroup END
-
-let g:syntastic_go_checkers = ['golint', 'govet']
-let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
-let g:go_metalinter_command='golangci-lint'
-let g:go_def_mode='gopls'
-let g:go_info_mode = 'gopls'
-let g:go_list_type = "quickfix"
-let g:go_fmt_command = "goimports"
-let g:go_fmt_fail_silently = 1
-let g:go_auto_type_info = 1 
-let g:go_highlight_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_function_calls = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_build_constraints = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_generate_tags = 1
-let g:go_highlight_space_tab_error = 1
-let g:go_highlight_array_whitespace_error = 1
-let g:go_highlight_trailing_whitespace_error = 1
-let g:go_highlight_extra_types = 1
 
 " Rust config
 let g:rustfmt_autosave = 1
@@ -291,3 +262,21 @@ au BufRead,BufNewFile *.cfn.yml set ft=cfn_yaml
 au BufRead,BufNewFile *.cfn.yaml set ft=cfn_yaml
 autocmd BufWritePost *.cfn.* silent !cfn-format -w % 2>/dev/null
 
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-b>"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+
+" govim/govim autocompletion
+function! Omni()
+    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+                    \ 'name': 'omni',
+                    \ 'whitelist': ['go'],
+                    \ 'completor': function('asyncomplete#sources#omni#completor')
+                    \  }))
+endfunction
+
+au VimEnter * :call Omni()
+
+inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
