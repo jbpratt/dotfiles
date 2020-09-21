@@ -15,8 +15,8 @@ Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 " themes
-Plug 'cormacrelf/vim-colors-github'
 Plug 'srcery-colors/srcery-vim'
+Plug 'cormacrelf/vim-colors-github'
 
 Plug 'itchyny/lightline.vim'
 

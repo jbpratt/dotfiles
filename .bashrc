@@ -4,7 +4,7 @@
 
 [[ $- != *i* ]] && return
 
-[ -r /usr/share/bash-completion/bash_completion ] && . /usr/share/bash-completion/bash_completion
+[[ -r /usr/share/bash-completion/bash_completion ]] && source /usr/share/bash-completion/bash_completion
 [[ -f $HOME/.bash_aliases ]] && source $HOME/.bash_aliases
 [[ -f $HOME/.private ]] && source $HOME/.private
 [[ -f $HOME/.bash_profile ]] && source $HOME/.bash_profile
@@ -20,13 +20,30 @@ shopt -s checkwinsize
 shopt -s expand_aliases
 shopt -s histappend
 
-source /usr/share/fzf/key-bindings.bash
-source /usr/share/fzf/completion.bash
-complete -C aws_completer aws
-source <(golangci-lint completion bash)
-eval "$(gh completion)"
-eval "$(zoxide init bash)"
-eval "$(aactivator init)"
+setxkbmap -option caps:escape
+
+[[ -f /usr/share/fzf/key-bindings.bash ]] && source /usr/share/fzf/key-bindings.bash
+[[ -f /usr/share/fzf/completion.bash ]] && source /usr/share/fzf/completion.bash
+
+if [[ -x "$(command -v golangci-lint)" ]]; then
+  complete -C aws_completer aws
+fi
+
+if [[ -x "$(command -v golangci-lint)" ]]; then
+  source <(golangci-lint completion bash)
+fi
+
+if [[ -x "$(command -v gh)" ]]; then
+  eval "$(gh completion)"
+fi
+
+if [[ -x "$(command -v zoxide)" ]]; then
+  eval "$(zoxide init bash)"
+fi
+
+if [[ -x "$(command -v aactivator)" ]]; then
+  eval "$(aactivator init)"
+fi
 
 if [[ -x "$(command -v fw)" ]]; then
 	if [[ -x "$(command -v fzf)" ]]; then
@@ -111,24 +128,27 @@ drm() {
 	[ -n "$cid" ] && docker rm "$cid"
 }
 
-source $HOME/gitstatus/gitstatus.plugin.sh
-function my_set_prompt() {
-	PS1='\w'
 
-	if gitstatus_query && [[ "$VCS_STATUS_RESULT" == ok-sync ]]; then
-		if [[ -n "$VCS_STATUS_LOCAL_BRANCH" ]]; then
-			PS1+=" ${VCS_STATUS_LOCAL_BRANCH//\\/\\\\}" # escape backslash
-		else
-			PS1+=" @${VCS_STATUS_COMMIT//\\/\\\\}" # escape backslash
-		fi
-		[[ "$VCS_STATUS_HAS_STAGED" == 1 ]] && PS1+='+'
-		[[ "$VCS_STATUS_HAS_UNSTAGED" == 1 ]] && PS1+='!'
-		[[ "$VCS_STATUS_HAS_UNTRACKED" == 1 ]] && PS1+='?'
-	fi
+if [[ -x "$(command -v gitstatus_query)" ]]; then
+  [[ -f $HOME/gitstatus/gitstatus.plugin.sh ]] && source $HOME/gitstatus/gitstatus.plugin.sh
+  function my_set_prompt() {
+    PS1='\w'
 
-	PS1+=' '
-	shopt -u promptvars # disable expansion of '$(...)' and the like
-}
-gitstatus_stop && gitstatus_start
-PROMPT_COMMAND=my_set_prompt
-setxkbmap -option caps:escape
+    if gitstatus_query && [[ "$VCS_STATUS_RESULT" == ok-sync ]]; then
+      if [[ -n "$VCS_STATUS_LOCAL_BRANCH" ]]; then
+        PS1+=" ${VCS_STATUS_LOCAL_BRANCH//\\/\\\\}" # escape backslash
+      else
+        PS1+=" @${VCS_STATUS_COMMIT//\\/\\\\}" # escape backslash
+      fi
+      [[ "$VCS_STATUS_HAS_STAGED" == 1 ]] && PS1+='+'
+      [[ "$VCS_STATUS_HAS_UNSTAGED" == 1 ]] && PS1+='!'
+      [[ "$VCS_STATUS_HAS_UNTRACKED" == 1 ]] && PS1+='?'
+    fi
+
+    PS1+=' '
+    shopt -u promptvars # disable expansion of '$(...)' and the like
+  }
+  gitstatus_stop && gitstatus_start
+  PROMPT_COMMAND=my_set_prompt
+fi
+
