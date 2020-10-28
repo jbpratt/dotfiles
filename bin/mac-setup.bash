@@ -15,9 +15,9 @@ tap 'homebrew/services'
 RUBY
 
 brew install git wget coreutils bash htop vim \
-  awscli shellcheck findutils tree lsd
+  shellcheck findutils tree lsd protobuf swift-protobuf
 
-brew cask install firefox alacritty rectangle
+brew cask install firefox rectangle
 brew cleanup
 git clone https://github.com/jbpratt78/dotfiles.git "$HOME/"
 

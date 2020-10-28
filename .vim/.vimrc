@@ -26,24 +26,23 @@ Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': [
       \ 'rust', 
       \ 'cpp', 
       \ 'kotlin',
-      \ 'javascript', 'typescript',
+      \ 'javascript', 'typescript', 'typescriptreact',
       \ 'cfn_yaml', 'cfn_json'] }
 
 Plug 'wellle/context.vim'
 
-"Plug 'fatih/vim-go', { 'do': ':GoUpdateBinaries' }
 Plug 'govim/govim'
-Plug 'prabirshrestha/asyncomplete.vim' " Needed to make govim/govim autocompletion work
-Plug 'yami-beta/asyncomplete-omni.vim' " Needed to make govim/govim autocompletion work
+Plug 'prabirshrestha/asyncomplete.vim', {'for': ['go'] } " Needed to make govim/govim autocompletion work
+Plug 'yami-beta/asyncomplete-omni.vim', {'for': ['go'] } " Needed to make govim/govim autocompletion work
 
-Plug 'sebdah/vim-delve'
-Plug 'Shougo/vimproc.vim', {'do' : 'make'}  " Needed to make sebdah/vim-delve work on Vim
-Plug 'Shougo/vimshell.vim'                  " Needed to make sebdah/vim-delve work on Vim
+Plug 'sebdah/vim-delve', {'for': ['go'] }
+Plug 'Shougo/vimproc.vim', {'do' : 'make', 'for': ['go']}  " Needed to make sebdah/vim-delve work on Vim
+Plug 'Shougo/vimshell.vim', {'for': ['go'] }               " Needed to make sebdah/vim-delve work on Vim
 
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
-Plug 'udalov/kotlin-vim'
+Plug 'udalov/kotlin-vim', {'for': ['kotlin']}
 call plug#end()
 
 filetype indent on
@@ -267,15 +266,19 @@ let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
 " govim/govim autocompletion
-function! Omni()
-    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-                    \ 'name': 'omni',
-                    \ 'whitelist': ['go'],
-                    \ 'completor': function('asyncomplete#sources#omni#completor')
-                    \  }))
-endfunction
+"if index(['go'], &filetype) != -1
+  "augroup go
+    function! Omni()
+        call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+                        \ 'name': 'omni',
+                        \ 'whitelist': ['go'],
+                        \ 'completor': function('asyncomplete#sources#omni#completor')
+                        \  }))
+    endfunction
 
-au VimEnter * :call Omni()
+    au VimEnter * :call Omni()
+"  augroup END
+"endif
 
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
