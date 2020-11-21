@@ -21,19 +21,20 @@ Plug 'cormacrelf/vim-colors-github'
 Plug 'itchyny/lightline.vim'
 
 Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': [
-      \ 'python', 
-      \ 'bash', 
-      \ 'rust', 
-      \ 'cpp', 
+      \ 'python',
+      \ 'bash',
+      \ 'rust',
+      \ 'cpp',
+      \ 'swift',
       \ 'kotlin',
       \ 'javascript', 'typescript', 'typescriptreact',
       \ 'cfn_yaml', 'cfn_json'] }
 
 Plug 'wellle/context.vim'
 
-Plug 'govim/govim'
-Plug 'prabirshrestha/asyncomplete.vim', {'for': ['go'] } " Needed to make govim/govim autocompletion work
-Plug 'yami-beta/asyncomplete-omni.vim', {'for': ['go'] } " Needed to make govim/govim autocompletion work
+Plug 'govim/govim', {'for': ['go'] }
+Plug 'prabirshrestha/asyncomplete.vim' ", {'for': ['go'] } " Needed to make govim/govim autocompletion work
+Plug 'yami-beta/asyncomplete-omni.vim' ", {'for': ['go'] } " Needed to make govim/govim autocompletion work
 
 Plug 'sebdah/vim-delve', {'for': ['go'] }
 Plug 'Shougo/vimproc.vim', {'do' : 'make', 'for': ['go']}  " Needed to make sebdah/vim-delve work on Vim
@@ -43,6 +44,8 @@ Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
 
 Plug 'udalov/kotlin-vim', {'for': ['kotlin']}
+
+Plug 'OmniSharp/omnisharp-vim', {'for': ['cs']}
 call plug#end()
 
 filetype indent on
@@ -265,20 +268,61 @@ let g:UltiSnipsExpandTrigger="<tab>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
-" govim/govim autocompletion
-"if index(['go'], &filetype) != -1
-  "augroup go
-    function! Omni()
-        call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-                        \ 'name': 'omni',
-                        \ 'whitelist': ['go'],
-                        \ 'completor': function('asyncomplete#sources#omni#completor')
-                        \  }))
-    endfunction
+let g:OmniSharp_server_use_mono = 1
+let g:OmniSharp_selector_ui = 'fzf'
+let g:OmniSharp_selector_findusages = 'fzf'
 
-    au VimEnter * :call Omni()
-"  augroup END
-"endif
+augroup omnisharp_commands
+  autocmd!
+
+  " Show type information automatically when the cursor stops moving.
+  " Note that the type is echoed to the Vim command line, and will overwrite
+  " any other messages in this space including e.g. ALE linting messages.
+  autocmd CursorHold *.cs OmniSharpTypeLookup
+
+  " The following commands are contextual, based on the cursor position.
+  autocmd FileType cs nmap <silent> <buffer> gd <Plug>(omnisharp_go_to_definition)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfu <Plug>(omnisharp_find_usages)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfi <Plug>(omnisharp_find_implementations)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ospd <Plug>(omnisharp_preview_definition)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ospi <Plug>(omnisharp_preview_implementations)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ost <Plug>(omnisharp_type_lookup)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osd <Plug>(omnisharp_documentation)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfs <Plug>(omnisharp_find_symbol)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osfx <Plug>(omnisharp_fix_usings)
+  autocmd FileType cs nmap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
+  autocmd FileType cs imap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
+
+  " Navigate up and down by method/property/field
+  autocmd FileType cs nmap <silent> <buffer> [[ <Plug>(omnisharp_navigate_up)
+  autocmd FileType cs nmap <silent> <buffer> ]] <Plug>(omnisharp_navigate_down)
+  " Find all code errors/warnings for the current solution and populate the quickfix window
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osgcc <Plug>(omnisharp_global_code_check)
+  " Contextual code actions (uses fzf, vim-clap, CtrlP or unite.vim selector when available)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osca <Plug>(omnisharp_code_actions)
+  autocmd FileType cs xmap <silent> <buffer> <Leader>osca <Plug>(omnisharp_code_actions)
+  " Repeat the last code action performed (does not use a selector)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
+  autocmd FileType cs xmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
+
+  autocmd FileType cs nmap <silent> <buffer> <Leader>os= <Plug>(omnisharp_code_format)
+
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osnm <Plug>(omnisharp_rename)
+
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osre <Plug>(omnisharp_restart_server)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>osst <Plug>(omnisharp_start_server)
+  autocmd FileType cs nmap <silent> <buffer> <Leader>ossp <Plug>(omnisharp_stop_server)
+augroup END
+
+function! Omni()
+    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
+                    \ 'name': 'omni',
+                    \ 'whitelist': ['go'],
+                    \ 'completor': function('asyncomplete#sources#omni#completor')
+                    \  }))
+endfunction
+
+au VimEnter * :call Omni()
 
 inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
 inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
