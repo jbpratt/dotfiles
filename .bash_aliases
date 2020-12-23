@@ -9,7 +9,7 @@ alias ~="cd ~"
 alias ..="cd .."
 alias ...="cd ../.."
 alias grep='grep --color=auto'
-alias weather="curl wttr.in/Birmingham,AL"
+alias weather="curl wttr.in/Birmingham,AL?format=v2"
 alias gc="git commit -vp"
 alias ga="git number add"
 alias gd="git diff --cached"

@@ -38,6 +38,14 @@ block = "cpu"
 interval = 1
 
 [[block]]
+block = "temperature"
+collapsed = false
+interval = 10
+format = "{min}° min, {max}° max, {average}° avg"
+chip = "*-isa-*"
+inputs = ["CPUTIN", "SYSTIN"]
+
+[[block]]
 block = "load"
 interval = 1
 format = "{1m}"
