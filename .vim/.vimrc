@@ -3,7 +3,6 @@ if &compatible
   set nocompatible
 endif
 
-
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
@@ -32,7 +31,7 @@ Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': [
 
 Plug 'wellle/context.vim'
 
-Plug 'govim/govim'
+Plug 'govim/govim', {'for': ['go'] }
 Plug 'prabirshrestha/asyncomplete.vim', {'for': ['go'] } " Needed to make govim/govim autocompletion work
 Plug 'yami-beta/asyncomplete-omni.vim', {'for': ['go'] } " Needed to make govim/govim autocompletion work
 
@@ -40,12 +39,9 @@ Plug 'sebdah/vim-delve', {'for': ['go'] }
 Plug 'Shougo/vimproc.vim', {'do' : 'make', 'for': ['go']}  " Needed to make sebdah/vim-delve work on Vim
 Plug 'Shougo/vimshell.vim', {'for': ['go'] }               " Needed to make sebdah/vim-delve work on Vim
 
-Plug 'SirVer/ultisnips'
-Plug 'honza/vim-snippets'
+Plug 'mattn/calendar-vim'
 
-Plug 'udalov/kotlin-vim', {'for': ['kotlin']}
-
-Plug 'OmniSharp/omnisharp-vim', {'for': ['cs']}
+Plug 'chaoren/vim-wordmotion'
 call plug#end()
 
 filetype indent on
@@ -119,16 +115,10 @@ endfunction
 
 " govim/govim settings
 filetype plugin on
-filetype indent on
-autocmd! BufEnter,BufNewFile *.go syntax on
-autocmd! BufLeave *.go syntax off
 if has("patch-8.1.1904")
   set completeopt+=popup
   set completepopup=align:menu,border:off,highlight:Pmenu
 endif
-command! Cnext try | cbelow | catch | cabove 9999 | catch | endtry
-nnoremap <leader>z :Cnext<CR>
-call govim#config#Set("Gofumpt", 1)
 " end govim settings
 
 " Write undo tree to a file to resume from next time the file is opened
@@ -143,9 +133,7 @@ colorscheme srcery
 set background=dark
 
 let mapleader = ","
-function! CocCurrentFunction()
-    return get(b:, 'coc_current_function', '')
-endfunction
+let maplocalleader = "\\"
 
 " Ignore these folders for completions
 set wildignore+=.hg,.git,.svn                          " Version control
@@ -198,6 +186,8 @@ noremap <Leader>vt :<C-u>vert term<CR>
 nnoremap <Leader>html :-1read $HOME/.vim/.skeleton.html<CR>
 nnoremap <Leader>V :edit $MYVIMRC<CR>
 
+nnoremap <Leader>ee :edit $HOME/memes.org<CR>
+
 " Open files in horizontal split
 nnoremap <silent> <Leader>zz :call fzf#run({
 \   'down': '40%',
@@ -220,20 +210,6 @@ map <C-e> :NERDTreeToggle<CR>:NERDTreeMirror<CR>
 map <C-n> :NERDTreeToggle<CR>
 map <leader>ss :setlocal spell!<cr>
 
-function! s:build_go_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
-
-au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-
-" Rust config
-let g:rustfmt_autosave = 1
-
 nmap <silent> <leader>u <Plug>(coc-references)
 nmap <silent> <leader>p :call CocActionAsync('format')<CR>
 " Remap for rename current word
@@ -252,66 +228,21 @@ nmap <silent> gr <Plug>(coc-references)
 " Use <c-space> to trigger completion.
 inoremap <silent><expr> <c-space> coc#refresh()
 
+function! CocCurrentFunction()
+    return get(b:, 'coc_current_function', '')
+endfunction
+
 au InsertLeave * silent! set nopaste
 
 command! -bang ProjectFiles call fzf#vim#files('~/projects', <bang>0)
 
 au BufRead,BufNewFile *.md setlocal textwidth=80
 
-autocmd FileType python let b:coc_root_patterns = ['.git', '.env']
+autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv']
 
 au BufRead,BufNewFile *.cfn.json set ft=cfn_json
 au BufRead,BufNewFile *.cfn.yml set ft=cfn_yaml
 au BufRead,BufNewFile *.cfn.yaml set ft=cfn_yaml
 autocmd BufWritePost *.cfn.* silent !cfn-format -w % 2>/dev/null
 
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
-let g:OmniSharp_server_use_mono = 1
-let g:OmniSharp_selector_ui = 'fzf'
-let g:OmniSharp_selector_findusages = 'fzf'
-
-augroup omnisharp_commands
-  autocmd!
-
-  " Show type information automatically when the cursor stops moving.
-  " Note that the type is echoed to the Vim command line, and will overwrite
-  " any other messages in this space including e.g. ALE linting messages.
-  autocmd CursorHold *.cs OmniSharpTypeLookup
-
-  " The following commands are contextual, based on the cursor position.
-  autocmd FileType cs nmap <silent> <buffer> gd <Plug>(omnisharp_go_to_definition)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osfu <Plug>(omnisharp_find_usages)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osfi <Plug>(omnisharp_find_implementations)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>ospd <Plug>(omnisharp_preview_definition)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>ospi <Plug>(omnisharp_preview_implementations)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>ost <Plug>(omnisharp_type_lookup)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osd <Plug>(omnisharp_documentation)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osfs <Plug>(omnisharp_find_symbol)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osfx <Plug>(omnisharp_fix_usings)
-  autocmd FileType cs nmap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
-  autocmd FileType cs imap <silent> <buffer> <C-\> <Plug>(omnisharp_signature_help)
-
-  " Navigate up and down by method/property/field
-  autocmd FileType cs nmap <silent> <buffer> [[ <Plug>(omnisharp_navigate_up)
-  autocmd FileType cs nmap <silent> <buffer> ]] <Plug>(omnisharp_navigate_down)
-  " Find all code errors/warnings for the current solution and populate the quickfix window
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osgcc <Plug>(omnisharp_global_code_check)
-  " Contextual code actions (uses fzf, vim-clap, CtrlP or unite.vim selector when available)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osca <Plug>(omnisharp_code_actions)
-  autocmd FileType cs xmap <silent> <buffer> <Leader>osca <Plug>(omnisharp_code_actions)
-  " Repeat the last code action performed (does not use a selector)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
-  autocmd FileType cs xmap <silent> <buffer> <Leader>os. <Plug>(omnisharp_code_action_repeat)
-
-  autocmd FileType cs nmap <silent> <buffer> <Leader>os= <Plug>(omnisharp_code_format)
-
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osnm <Plug>(omnisharp_rename)
-
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osre <Plug>(omnisharp_restart_server)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>osst <Plug>(omnisharp_start_server)
-  autocmd FileType cs nmap <silent> <buffer> <Leader>ossp <Plug>(omnisharp_stop_server)
-augroup END
-
+autocmd FileType make setlocal noexpandtab
