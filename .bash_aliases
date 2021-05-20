@@ -23,3 +23,5 @@ alias notes="vim $HOME/notes.md"
 alias ssh="TERM=xterm-256color ssh -v"
 alias mutt="neomutt"
 alias get_idf='. $HOME/esp/esp-idf/export.sh'
+alias copy="xclip -sel clip"
+alias vi="vim"

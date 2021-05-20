@@ -31,13 +31,9 @@ bindsym $mod+Return exec alacritty
 # kill focused window
 bindsym $mod+Shift+q kill
 
-# start program launcher
-# bindsym $mod+d exec --no-startup-id dmenu_recency
-
 # launch categorized menu
 bindsym $mod+z exec --no-startup-id morc_menu
 
-exec --no-startup-id volumeicon
 bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 
 # Start Applications
@@ -201,18 +197,18 @@ mode "$mode_system" {
 # Resize window (you can also use the mouse for that)
 bindsym $mod+r mode "resize"
 mode "resize" {
-        bindsym $left  resize shrink width 5 px or 5 ppt
-        bindsym $down  resize grow height 5 px or 5 ppt
-        bindsym $up    resize shrink height 5 px or 5 ppt
-        bindsym $right resize grow width 5 px or 5 ppt
-        # same bindings, but for the arrow keys
-        bindsym Left  resize shrink width 10 px or 10 ppt
-        bindsym Down  resize grow height 10 px or 10 ppt
-        bindsym Up    resize shrink height 10 px or 10 ppt
-        bindsym Right resize grow width 10 px or 10 ppt
-        # exit resize mode: Enter or Escape
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
+    bindsym $left  resize shrink width 5 px or 5 ppt
+    bindsym $down  resize grow height 5 px or 5 ppt
+    bindsym $up    resize shrink height 5 px or 5 ppt
+    bindsym $right resize grow width 5 px or 5 ppt
+    # same bindings, but for the arrow keys
+    bindsym Left  resize shrink width 10 px or 10 ppt
+    bindsym Down  resize grow height 10 px or 10 ppt
+    bindsym Up    resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+    # exit resize mode: Enter or Escape
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
 }
 
 # Lock screen
@@ -223,9 +219,13 @@ exec --no-startup-id nitrogen --restore
 exec --no-startup-id clipit
 exec --no-startup-id flameshot
 exec --no-startup-id xautolock -time 120 -locker blurlock
+exec --no-startup-id volumeicon
 exec --no-startup-id "blueman-applet"
 exec --no-startup-id "pulseaudio --start"
 exec --no-startup-id "discord"
+exec --no-startup-id "nm-applet"
+exec --no-startup-id "barrier"
+exec --no-startup-id "hexchat"
 
 set_from_resource $term_background background
 set_from_resource $term_foreground foreground
@@ -273,49 +273,5 @@ bindsym $mod+m bar mode toggle
   client.placeholder      #d9d6ca #1c1c22 #d9d6ca #3e646f #3e646f 
 
   client.background       #1c1c22 
-
-# Set inner/outer gaps
-gaps inner 0
-gaps outer 0
-
-smart_gaps on
-
-smart_borders on
-
-set $mode_gaps Gaps: (o) outer, (i) inner
-set $mode_gaps_outer Outer Gaps: +|-|0 (local), Shift + +|-|0 (global)
-set $mode_gaps_inner Inner Gaps: +|-|0 (local), Shift + +|-|0 (global)
-bindsym $mod+Shift+g mode "$mode_gaps"
-
-mode "$mode_gaps" {
-        bindsym o      mode "$mode_gaps_outer"
-        bindsym i      mode "$mode_gaps_inner"
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_inner" {
-        bindsym plus  gaps inner current plus 5
-        bindsym minus gaps inner current minus 5
-        bindsym 0     gaps inner current set 0
-
-        bindsym Shift+plus  gaps inner all plus 5
-        bindsym Shift+minus gaps inner all minus 5
-        bindsym Shift+0     gaps inner all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
-mode "$mode_gaps_outer" {
-        bindsym plus  gaps outer current plus 5
-        bindsym minus gaps outer current minus 5
-        bindsym 0     gaps outer current set 0
-
-        bindsym Shift+plus  gaps outer all plus 5
-        bindsym Shift+minus gaps outer all minus 5
-        bindsym Shift+0     gaps outer all set 0
-
-        bindsym Return mode "default"
-        bindsym Escape mode "default"
-}
 
 for_window [title="fzf"] floating enable

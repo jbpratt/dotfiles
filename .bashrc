@@ -12,6 +12,7 @@
 export PS1="\W >\[$(tput sgr0)\]"
 export HISTSIZE=
 export HISTFILESIZE=
+export PROMPT_COMMAND="history -a;$PROMPT_COMMAND"
 
 xhost +local:root >/dev/null 2>&1
 complete -cf sudo
