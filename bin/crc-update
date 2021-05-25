@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+set -x
+set -o pipefail
+
+VERSION=latest
+FILE=crc-linux-amd64.tar.xz
+DIR=/tmp/crc-update
+
+crc version || echo "crc not found"
+
+mkdir "${DIR}"
+pushd "${DIR}" || exit
+
+curl -o "${FILE}" \
+  "https://mirror.openshift.com/pub/openshift-v4/clients/crc/${VERSION}/${FILE}"
+
+SHA256SUM=$(curl -s \
+  https://mirror.openshift.com/pub/openshift-v4/clients/crc/latest/sha256sum.txt 2>&1 \
+  | grep linux | awk '{print $1}')
+
+echo "${SHA256SUM} ${FILE}" | sha256sum --check --status
+
+tar -xJf "${FILE}"
+
+EXE=$(find . -executable -type f)
+install -Dm755 "${EXE}" -t "$HOME/.local/bin"
+
+crc version
+
+popd || exit
+rm -rf "${DIR}"
