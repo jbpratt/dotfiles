@@ -27,7 +27,8 @@ Plug 'neoclide/coc.nvim', {'branch': 'release', 'for': [
       \ 'swift',
       \ 'kotlin',
       \ 'javascript', 'typescript', 'typescriptreact',
-      \ 'cfn_yaml', 'cfn_json'] }
+      \ 'zig',
+      \ ] }
 
 Plug 'wellle/context.vim'
 
@@ -42,6 +43,15 @@ Plug 'Shougo/vimshell.vim', {'for': ['go'] }               " Needed to make sebd
 Plug 'mattn/calendar-vim'
 
 Plug 'chaoren/vim-wordmotion'
+
+Plug 'jceb/vim-orgmode'
+
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-speeddating'
+
+Plug 'ziglang/zig.vim'
+
+Plug 'hashivim/vim-terraform'
 call plug#end()
 
 filetype indent on
@@ -158,7 +168,13 @@ noremap <F1> <Nop>
 " Force root permission saves
 cnoremap w!! w !sudo tee % >/dev/null
 
+command! -bang -nargs=* Rg call fzf#vim#grep(
+      \ "rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>),
+      \ 1,
+      \ {'options': '--delimiter : --nth 4..'}, <bang>0)
+
 nmap \e :Files<CR>
+nmap \g :GFiles<CR>
 nmap \r :Rg<CR>
 
 " Easy saving
@@ -183,20 +199,7 @@ noremap <Leader>g :<C-u>vsplit<CR>
 noremap <Leader>tt :<C-u>term<CR>
 noremap <Leader>vt :<C-u>vert term<CR>
 
-nnoremap <Leader>html :-1read $HOME/.vim/.skeleton.html<CR>
 nnoremap <Leader>V :edit $MYVIMRC<CR>
-
-nnoremap <Leader>ee :edit $HOME/memes.org<CR>
-
-" Open files in horizontal split
-nnoremap <silent> <Leader>zz :call fzf#run({
-\   'down': '40%',
-\   'sink': 'botright split' })<CR>
-
-" Open files in vertical horizontal split
-nnoremap <silent> <Leader>ZZ :call fzf#run({
-\   'right': winwidth('.') / 2,
-\   'sink':  'vertical botright split' })<CR>
 
 " NERD TREE
 let NERDTreeIgnore=['\~$', '.o$', 'bower_components', 'node_modules', '__pycache__']
@@ -234,15 +237,12 @@ endfunction
 
 au InsertLeave * silent! set nopaste
 
-command! -bang ProjectFiles call fzf#vim#files('~/projects', <bang>0)
-
 au BufRead,BufNewFile *.md setlocal textwidth=80
 
 autocmd FileType python let b:coc_root_patterns = ['.git', '.env', 'venv']
 
-au BufRead,BufNewFile *.cfn.json set ft=cfn_json
-au BufRead,BufNewFile *.cfn.yml set ft=cfn_yaml
-au BufRead,BufNewFile *.cfn.yaml set ft=cfn_yaml
-autocmd BufWritePost *.cfn.* silent !cfn-format -w % 2>/dev/null
-
 autocmd FileType make setlocal noexpandtab
+
+au BufNewFile,BufRead Jenkinsfile setf groovy
+
+let g:terraform_fmt_on_save=1
