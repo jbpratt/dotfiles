@@ -10,28 +10,25 @@ if empty(glob('~/.vim/autoload/plug.vim'))
 endif
 
 call plug#begin()
-Plug 'scrooloose/nerdtree'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
-" themes
 Plug 'srcery-colors/srcery-vim'
-
 Plug 'itchyny/lightline.vim'
-
-Plug 'wellle/context.vim'
-
-Plug 'govim/govim'
-Plug 'prabirshrestha/asyncomplete.vim' ", {'for': ['go'] } " Needed to make govim/govim autocompletion work
-Plug 'yami-beta/asyncomplete-omni.vim' ", {'for': ['go'] } " Needed to make govim/govim autocompletion work
-
-Plug 'sebdah/vim-delve', {'for': ['go'] }
-Plug 'Shougo/vimproc.vim', {'do' : 'make', 'for': ['go']}  " Needed to make sebdah/vim-delve work on Vim
-Plug 'Shougo/vimshell.vim', {'for': ['go'] }               " Needed to make sebdah/vim-delve work on Vim
+Plug 'itchyny/vim-gitbranch'
+Plug 'ray-x/go.nvim'
+Plug 'tpope/vim-fugitive'
+Plug 'vim-python/python-syntax', {'for': ['python'] }
+Plug 'rosstimson/bats.vim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'nvim-treesitter/nvim-treesitter'
+Plug 'mg979/vim-visual-multi', {'branch': 'master'}
 call plug#end()
 
 filetype indent on
 syntax on
 
+set spelllang=en_us
+set encoding=utf-8
 set shell=$SHELL               " Set the default shell
 set history=1000               " The number of history items to remember
 set ttyfast                    " Set that we have a fast terminal
@@ -71,18 +68,27 @@ set path+=**                   " Make |:find| discover recursive paths
 set backspace=indent,eol,start " Backspace settings
 set pastetoggle=<F3>           " Toggle paste mode
 set colorcolumn=80             " Show visual indicator for line length
+set noshowmode                 " Do not show mode bar
 
-set listchars=eol:¬,tab:->,trail:~,extends:>,precedes:<,space:•
+set listchars=eol:¬
+set listchars+=tab:->
+set listchars+=trail:~
+set listchars+=extends:>
+set listchars+=precedes:<
+set listchars+=space:•
+
 set nobackup
 set nowritebackup
 set updatetime=500
-set balloondelay=250
 set signcolumn=number
-set ttymouse=sgr
 " Set mapping and key timeouts
 set timeout
 set timeoutlen=1000 
 set ttimeoutlen=0
+if !has('nvim')
+  set balloondelay=250
+  set ttymouse=sgr
+endif
 
 if has('clipboard')     " If the feature is available
   set clipboard=unnamed " copy to the system clipboard
@@ -98,20 +104,6 @@ function! s:EnsureDirectory(directory)
   endif
 endfunction
 
-" govim/govim settings
-filetype plugin on
-filetype indent on
-autocmd! BufEnter,BufNewFile *.go syntax on
-autocmd! BufLeave *.go syntax off
-if has("patch-8.1.1904")
-  set completeopt+=popup
-  set completepopup=align:menu,border:off,highlight:Pmenu
-endif
-command! Cnext try | cbelow | catch | cabove 9999 | catch | endtry
-nnoremap <leader>m :Cnext<CR>
-call govim#config#Set("Gofumpt", 1)
-" end govim settings
-
 " Write undo tree to a file to resume from next time the file is opened
 if has('persistent_undo')
   set undolevels=2000            " The number of undo items to remember
@@ -124,9 +116,7 @@ colorscheme srcery
 set background=dark
 
 let mapleader = ","
-function! CocCurrentFunction()
-    return get(b:, 'coc_current_function', '')
-endfunction
+let maplocalleader = "\\"
 
 " Ignore these folders for completions
 set wildignore+=.hg,.git,.svn                          " Version control
@@ -137,11 +127,7 @@ let g:lightline = {
       \ 'colorscheme': 'srcery',
       \ 'active': {
       \   'left': [ [ 'mode', 'paste' ],
-      \             [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ] ]
-      \ },
-      \ 'component_function': {
-      \   'cocstatus': 'coc#status',
-      \   'currentfunction': 'CocCurrentFunction'
+      \             [ 'gitbranch', 'readonly', 'filename', 'modified' ] ]
       \ },
       \ }
 
@@ -151,7 +137,13 @@ noremap <F1> <Nop>
 " Force root permission saves
 cnoremap w!! w !sudo tee % >/dev/null
 
+command! -bang -nargs=* Rg call fzf#vim#grep(
+      \ "rg --column --line-number --no-heading --color=always --smart-case ".shellescape(<q-args>),
+      \ 1,
+      \ {'options': '--delimiter : --nth 4..'}, <bang>0)
+
 nmap \e :Files<CR>
+nmap \g :GFiles<CR>
 nmap \r :Rg<CR>
 
 " Easy saving
@@ -164,70 +156,36 @@ noremap <C-l> <C-w>l
 noremap <C-h> <C-w>h
 
 " Resizing windows
-nnoremap <silent> <Leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
-nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
-nnoremap <silent> <Leader>0 :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
-nnoremap <silent> <Leader>9 :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
+nnoremap <silent> <leader>= :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+nnoremap <silent> <leader>0 :exe "vertical resize " . (winwidth(0) * 3/2)<CR>
+nnoremap <silent> <leader>9 :exe "vertical resize " . (winwidth(0) * 2/3)<CR>
 
 " Split
-noremap <Leader>h :<C-u>split<CR>
-noremap <Leader>g :<C-u>vsplit<CR>
+noremap <leader>h :<C-u>split<CR>
+noremap <leader>g :<C-u>vsplit<CR>
 
-noremap <Leader>tt :<C-u>term<CR>
-noremap <Leader>vt :<C-u>vert term<CR>
+noremap <leader>tt :<C-u>term<CR>
+noremap <leader>vt :<C-u>vert term<CR>
 
-nnoremap <Leader>html :-1read $HOME/.vim/.skeleton.html<CR>
-nnoremap <Leader>V :edit $MYVIMRC<CR>
+nnoremap <leader>V :edit $MYVIMRC<CR>
 
-" Open files in horizontal split
-nnoremap <silent> <Leader>zz :call fzf#run({
-\   'down': '40%',
-\   'sink': 'botright split' })<CR>
-
-" Open files in vertical horizontal split
-nnoremap <silent> <Leader>ZZ :call fzf#run({
-\   'right': winwidth('.') / 2,
-\   'sink':  'vertical botright split' })<CR>
-
-" NERD TREE
-let NERDTreeIgnore=['\~$', '.o$', 'bower_components', 'node_modules', '__pycache__']
-let NERDTreeWinSize=20
-let NERDTreeChDirMode=0
-let NERDTreeQuitOnOpen=1
-let NERDTreeShowHidden=0
-let NERDTreeKeepTreeInNewTab=1
-
-map <C-e> :NERDTreeToggle<CR>:NERDTreeMirror<CR>
-map <C-n> :NERDTreeToggle<CR>
 map <leader>ss :setlocal spell!<cr>
 
-function! s:build_go_files()
-  let l:file = expand('%')
-  if l:file =~# '^\f\+_test\.go$'
-    call go#test#Test(0, 1)
-  elseif l:file =~# '^\f\+\.go$'
-    call go#cmd#Build(0)
-  endif
-endfunction
-
-au BufRead,BufNewFile *.gohtml set filetype=gohtmltmpl
-
 au InsertLeave * silent! set nopaste
-
-command! -bang ProjectFiles call fzf#vim#files('~/projects', <bang>0)
-
 au BufRead,BufNewFile *.md setlocal textwidth=80
+au BufRead,BufNewFile Jenkinsfile setf groovy
+au BufNewFile,BufRead *.cue setf cue
+autocmd FileType make setlocal noexpandtab
+autocmd FileType yaml setlocal ai ts=2 sw=2 et
+autocmd FileType groovy setlocal ts=4 sw=4
+autocmd FileType cue setlocal sw=4 ts=4 noet si
+autocmd FileType cs setlocal sw=4 ts=4 si
+autocmd FileType sh setlocal sw=4 ts=4 noet si
+autocmd FileType bats setlocal sw=4 ts=4 noet si
 
-function! Omni()
-    call asyncomplete#register_source(asyncomplete#sources#omni#get_source_options({
-                    \ 'name': 'omni',
-                    \ 'whitelist': ['go'],
-                    \ 'completor': function('asyncomplete#sources#omni#completor')
-                    \  }))
-endfunction
+let g:dart_format_on_save = 1
+let g:terraform_fmt_on_save=1
 
-au VimEnter * :call Omni()
-
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
-inoremap <expr> <cr>    pumvisible() ? "\<C-y>" : "\<cr>"
+let g:python_highlight_all=1
+let g:python3_host_prog='/usr/bin/python'
