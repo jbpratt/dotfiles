@@ -1,0 +1,22 @@
+format = """
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_commit\
+$git_state\
+$git_status\
+$cmd_duration\
+$line_break\
+$status\
+$character"""
+
+[cmd_duration]
+min_time = 500
+format = "[$duration](bold yellow)"
+
+[git_branch]
+format = "[$symbol$branch]($style) "
+
+[python]
+format = ' [${version}(\($virtualenv\))]($style)'

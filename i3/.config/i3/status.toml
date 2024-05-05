@@ -1,0 +1,59 @@
+[theme]
+theme = "gruvbox-dark"
+[theme.overrides]
+good_bg = "#1C1B19"
+idle_bg = "#1C1B19"
+
+[icons]
+icons = "awesome5"
+
+[[block]]
+block = "sound"
+step_width = 3
+
+#[[block]]
+#block = "music"
+#player = "spotify"
+##buttons = ["play", "next"]
+##on_collapsed_click = "spotify"
+#format = "{avail}"
+##max_width = 0
+
+#[[block]]
+#block = "disk_space"
+#path = "/"
+##alias = "/"
+#info_type = "available"
+##unit = "GB"
+#interval = 20
+#warning = 15.0
+#alert = 8.0
+
+#[[block]]
+#block = "memory"
+##display_type = "memory"
+##format_mem = "{mem_total_used_percents}"
+##format_swap = "{swap_used_percents}"
+
+[[block]]
+block = "cpu"
+interval = 1
+
+[[block]]
+block = "temperature"
+interval = 10
+chip = "*-isa-*"
+inputs = ["CPUTIN", "SYSTIN"]
+
+[[block]]
+block = "load"
+interval = 1
+
+[[block]]
+block = "net"
+device = "enp8s0"
+interval = 5
+
+[[block]]
+block = "time"
+interval = 45
